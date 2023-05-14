@@ -9,29 +9,33 @@ use App\Repositories\Products\ProductsRepository;
 use App\Http\Controllers\Controller;
 use App\Service\CartsService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-// use DB;
-use PDF;
-use Hash;
-
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class HomeController extends Controller
 {
-    public function index(ProductsRepository $productRepository, CartsService $cartService)
+    protected $productRepository;
+    protected $cartService;
+
+    public function __construct(ProductsRepository $productRepository, CartsService $cartService)
     {
-        $menu = $productRepository->getMenu();
+        $this->productRepository = $productRepository;
+        $this->cartService = $cartService;
+    }
+    public function index()
+    {
+        $menu = $this->productRepository->getMenu();
 
         // Get data of Product
-        $iphone = $productRepository->getIphoneProducts('iphone', 0);
-        $apple_watch = $productRepository->getAppleWatchProducts('apple watch', 1);
-        $desktop = $productRepository->getDesktopProducts('desktop', 2);
-        $about_us = $productRepository->getAboutUs();
-        $banners = $productRepository->getBanners();
-        $rates = $productRepository->getRates();
+        $iphone = $this->productRepository->getIphoneProducts('iphone', 0);
+        $apple_watch = $this->productRepository->getAppleWatchProducts('apple watch', 1);
+        $desktop = $this->productRepository->getDesktopProducts('desktop', 2);
+        $about_us = $this->productRepository->getAboutUs();
+        $banners = $this->productRepository->getBanners();
+        $rates = $this->productRepository->getRates();
 
         // Get quantity Cart
-        $cart_amount = $cartService->getCartItemCount();
+        $cart_amount = $this->cartService->getCartItemCount();
 
         return view("home", compact('menu', 'iphone', 'apple_watch', 'desktop', 'cart_amount', 'about_us', 'banners', 'rates'));
     }
@@ -49,11 +53,9 @@ class HomeController extends Controller
 
         $menu = DB::table('products')->where('active', '0')->get();
 
-        $iphone = DB::table('products')->where('catagory', 'iphone')->where('session', 0)->get();
-        $apple_watch = DB::table('products')->where('catagory', 'apple watch')->where('session', 1)->get();
-        $desktop = DB::table('products')->where('catagory', 'desktop')->where('session', 2)->get();
-
-        $chefs = DB::table('chefs')->get();
+        $iphone = DB::table('products')->where('catagory', 'iphone')->get();
+        $apple_watch = DB::table('products')->where('catagory', 'apple watch')->get();
+        $desktop = DB::table('products')->where('catagory', 'desktop')->get();
 
 
         if (Auth::user()) {
@@ -66,6 +68,8 @@ class HomeController extends Controller
 
         $about_us = DB::table('about_us')->get();
         $banners = DB::table('banners')->get();
+        $rates = $this->productRepository->getRates();
+
 
 
         $usertype = Auth::user()->usertype;
@@ -101,7 +105,7 @@ class HomeController extends Controller
             $admin = $user - ($customer + $delivery_boy);
 
 
-            $rates = DB::table('rates')->get();
+            $rates = $this->productRepository->getAllRates();
 
             $product = array();
 
@@ -188,81 +192,35 @@ class HomeController extends Controller
 
 
 
-            return view('admin.dashboard', compact('pending_order', 'product_cart', 'copy_cart', 'total', 'copy_product', 'per_rate', 'product', 'cash_on_payment', 'online_payment', 'customer', 'delivery_boy', 'admin', 'processing_order', 'cancel_order', 'complete_order'));
+            return view('admin.dashboard', compact('pending_order', 'product_cart', 'copy_cart', 'total', 'copy_product', 'per_rate', 'product', 'cash_on_payment', 'online_payment', 'customer', 'delivery_boy', 'admin', 'processing_order', 'cancel_order', 'complete_order', 'rates'));
         } else {
-
-            return view("home", compact('menu', 'iphone', 'apple_watch', 'desktop', 'chefs', 'cart_amount', 'about_us', 'banners'));
+            return view("home", compact('menu', 'iphone', 'apple_watch', 'desktop', 'cart_amount', 'about_us', 'banners', 'rates'));
         }
     }
 
     // Contact ở Home
-    public function reservation_confirm(Request $req)
+    public function reservation_confirm(Request $request)
     {
 
-
-        $name = $req->name;
-        $email = $req->email;
-        $phone = $req->phone;
-
-        $no_guest = $req->no_guest;
-        $date = $req->date;
-        $time = $req->time;
-
-        $message = $req->message;
-
+        $name = $request->name;
+        $email = $request->email;
+        $phone = $request->phone;
+        $message = $request->message;
 
         $data = array();
 
         $data['name'] = $name;
         $data['email'] = $email;
-        $data['no_guest'] = $no_guest;
         $data['phone'] = $phone;
-        $data['date'] = $date;
-        $data['time'] = $time;
         $data['message'] = $message;
 
+        $data["title"] = "Mail from Ministore Admin";
+        $data["body"] = "We will respond to your comments as soon as possible, thanks!";
 
-        $confirm_reservation = DB::table('reservations')->Insert($data);
-
-
-        $details = [
-            'title' => 'Mail from RMS Admin',
-            'body' => 'Your reservation have been Placed Successfully'
-        ];
-
-        // \Mail::to(Auth::user()->email)->send(new \App\Mail\ReserveMail($details));
-
-        $data["title"] = "From RMS admin";
-        $data["body"] = "Your reservation have been Placed Successfully";
-
-
-        /*
-        $files = [
-            public_path('file/sample.pdf'),
-        ];
-
-
-        \Mail::send('mails.ReserveMail', $data, function($message)use($data, $files) {
-            $message->to(Auth::user()->email)
-                    ->subject('Mail from RMS Admin');
-
-            foreach ($files as $file){
-                $message->attach($file);
-            }
-
+        Mail::send('mails.Reserve', $data, function ($message) use ($data, $email) {
+            $message->to($email, $email)
+                ->subject($data["title"]);
         });
-
-        */
-
-        $pdf = PDF::loadView('mails.Reserve', $data);
-
-        \Mail::send('mails.Reserve', $data, function ($message) use ($data, $pdf) {
-            $message->to(Auth::user()->email, Auth::user()->email)
-                ->subject($data["title"])
-                ->attachData($pdf->output(), "Reservation Copy.pdf");
-        });
-
-
 
         return view('Reserve_order');
     }

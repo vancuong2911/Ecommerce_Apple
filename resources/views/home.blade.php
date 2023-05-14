@@ -206,7 +206,7 @@
                     <div class="section-heading">
                         <h6>Love the power.</h6>
                         <h6>Love the price.</h6>
-                        <h2>Which iPhone is right for you?</h2>
+                        <h2>Which product is right for you??</h2>
                     </div>
                 </div>
             </div>
@@ -1081,7 +1081,7 @@
                             $img = $product->image;
                             ?>
                             <div class='card'
-                                style="background-image: url({{ asset('clients/images_upload/products/' . $img) }})">
+                                style="background-image: url({{ asset('clients/images_upload/products/' . $img) }}); border-radius:15px;">
 
                                 <div class="price">
                                     <h6>{{ $product->price }}$</h6>
@@ -1176,7 +1176,7 @@
                 <div class="post-grid d-flex flex-wrap justify-content-between">
                     {{-- Lấy sản phẩm từ database ra 3 hạng mục --}}
                     <div class="col-lg-4 col-sm-12">
-                        <div class="card border-none me-3">
+                        <div class="card_poster border-none me-3">
                             <div class="card-image">
                                 <img src="{{ asset('clients/images/post-item1.jpg') }}" alt=""
                                     class="img-fluid">
@@ -1293,7 +1293,7 @@
                             @csrf
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <h4>Contact me about the product you want</h4>
+                                    <h4>Contact us to get the nearest invoice</h4>
                                 </div>
                                 <div class="col-lg-6 col-sm-12">
                                     <fieldset>
@@ -1311,46 +1311,6 @@
                                     <fieldset>
                                         <input name="phone" type="text" id="phone" placeholder="Phone Number*"
                                             required="">
-                                    </fieldset>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <fieldset>
-                                        <select value="number-guests" name="no_guest" id="number-guests">
-                                            <option value="number-guests">Number Of Guests</option>
-                                            <option name="1" id="1">1</option>
-                                            <option name="2" id="2">2</option>
-                                            <option name="3" id="3">3</option>
-                                            <option name="4" id="4">4</option>
-                                            <option name="5" id="5">5</option>
-                                            <option name="6" id="6">6</option>
-                                            <option name="7" id="7">7</option>
-                                            <option name="8" id="8">8</option>
-                                            <option name="9" id="9">9</option>
-                                            <option name="10" id="10">10</option>
-                                            <option name="11" id="11">11</option>
-                                            <option name="12" id="12">12</option>
-                                        </select>
-                                    </fieldset>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div id="filterDate2">
-                                        <div class="input-group date" data-date-format="dd/mm/yyyy">
-                                            <input name="date" id="date" type="text" class="form-control"
-                                                placeholder="dd/mm/yyyy">
-                                            <div class="input-group-addon">
-                                                <span class="glyphicon glyphicon-th"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <fieldset>
-                                        <select value="time" name="time" id="time">
-                                            <option value="time">Time</option>
-                                            <option name="Breakfast" id="Breakfast">Breakfast</option>
-                                            <option name="apple_watch" id="apple_watch">apple_watch</option>
-                                            <option name="desktop" id="desktop">desktop</option>
-                                        </select>
                                     </fieldset>
                                 </div>
                                 <div class="col-lg-12">

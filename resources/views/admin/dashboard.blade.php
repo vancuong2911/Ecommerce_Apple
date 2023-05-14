@@ -178,7 +178,8 @@
                                     <div class="preview-thumbnail">
                                         <div class="preview-icon bg-primary">
 
-                                            <img class="img-xs" src="{{ asset('assets/images/' . $product_get->image) }}"
+                                            <img class="img-xs"
+                                                src="{{ asset('clients/images_upload/products/' . $product_get->image) }}"
                                                 alt="">
 
                                         </div>

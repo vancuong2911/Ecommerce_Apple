@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="SSLCommerz">
-    <title>MidwayCafe</title>
+    <title>MiniStore - Apple</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -61,7 +61,7 @@
                     <div class="mb-3">
                         <label for="address">Address</label>
                         <input type="text" class="form-control" name="address" id="address"
-                            placeholder="1234 Main St" value="93 B, New Eskaton Road" required>
+                            placeholder="Nhập địa chỉ ở đây" value="Đông Anh, Hà Nội" required>
                         <div class="invalid-feedback">
                             Please enter your shipping address.
                         </div>
@@ -69,7 +69,8 @@
 
                     <div class="mb-3">
                         <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-                        <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
+                        <input type="text" class="form-control" id="address2"
+                            placeholder="Số phòng, căn hộ của bạn">
                     </div>
 
                     <div class="row">
@@ -77,7 +78,7 @@
                             <label for="country">Country</label>
                             <select class="custom-select d-block w-100" id="country" required>
                                 <option value="">Choose...</option>
-                                <option value="Bangladesh">Bangladesh</option>
+                                <option value="Bangladesh">Việt Nam</option>
                             </select>
                             <div class="invalid-feedback">
                                 Please select a valid country.
@@ -87,7 +88,7 @@
                             <label for="state">State</label>
                             <select class="custom-select d-block w-100" id="state" required>
                                 <option value="">Choose...</option>
-                                <option value="Dhaka">Dhaka</option>
+                                <option value="Dhaka">Hà Nội</option>
                             </select>
                             <div class="invalid-feedback">
                                 Please provide a valid state.
@@ -104,7 +105,8 @@
                     <hr class="mb-4">
 
                     <hr class="mb-4">
-                    <button class="btn btn-primary" endpoint="{{ url('/confirm_place_order') }}"> Confirm order
+                    <button class="btn btn-primary" type="submit"> Confirm
+                        order
                     </button>
                 </form>
             </div>

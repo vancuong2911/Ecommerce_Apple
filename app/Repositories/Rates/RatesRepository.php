@@ -22,6 +22,16 @@ class RatesRepository implements RatesRepositoryInterface
         return DB::table('rates')->where('product_id', $productId)->sum('star_value');
     }
 
+    public function getUserRate($productId, $userId)
+    {
+        $rate = DB::table('rates')
+            ->where('product_id', $productId)
+            ->where('user_id', $userId)
+            ->first();
+
+        return $rate;
+    }
+
     public function getTotalVoter($productId)
     {
         return DB::table('rates')->where('product_id', $productId)->count();
@@ -47,7 +57,7 @@ class RatesRepository implements RatesRepositoryInterface
         return DB::table('rates')->select('comments', 'created_at')->where('product_id', $productId)->whereNotNull('comments')->get();
     }
 
-    public function addRate($productId, $userId, $starValue, $comments)
+    public function addRate($userId, $productId,  $starValue, $comments)
     {
         $data = [
             'user_id' => $userId,
@@ -61,32 +71,19 @@ class RatesRepository implements RatesRepositoryInterface
 
     public function updateProductRate($productId, $newRate)
     {
+        return DB::table('rates')->where('product_id', $productId)->update(['star_value' => $newRate]);
+    }
+
+    public function updateComment($productId, $comments)
+    {
         $product = $this->getProduct($productId);
+        $rate = DB::table('rates')->where('product_id', $product->id)->first();
 
-        if ($product) {
-            $totalRate = $this->getTotalRate($productId);
-            $totalVoter = $this->getTotalVoter($productId);
-            if ($totalVoter == 0) {
-                return false;
-            }
-            $averageRate = $totalRate / $totalVoter;
-            $newAverageRate = (($averageRate * $totalVoter) + $newRate) / ($totalVoter + 1);
-            // dd($newAverageRate);
-
-            return DB::table('products')->where('id', $productId)->update(['rate' => $newAverageRate]);
+        if ($rate && $rate->comments != $comments) {
+            return DB::table('rates')->where('product_id', $product->id)->update(['comments' => $comments]);
         }
 
         return false;
-    }
-
-    public function create($data)
-    {
-        return DB::table('rates')->insert($data);
-    }
-
-    public function update($id, $data)
-    {
-        return DB::table('rates')->where('id', $id)->update($data);
     }
 
     public function delete($id)

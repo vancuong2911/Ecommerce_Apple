@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Clients;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Rates\RatesRepository;
@@ -29,12 +28,13 @@ class RateController extends Controller
             return redirect()->route('login');
         }
 
+        Session::put('product_id', $id);
+
         $already_rate = $this->rateRepository->getRateCount($id, $user->id);
         $find_rate = $this->rateRepository->getRateValue($id, $user->id);
         $products = $this->rateRepository->getProduct($id);
         $total_rate = $this->rateRepository->getTotalRate($id);
         $total_voter = $this->rateRepository->getTotalVoter($id);
-
         if ($total_voter > 0) {
             $per_rate = $total_rate / $total_voter;
         } else {
@@ -64,8 +64,17 @@ class RateController extends Controller
         $star_value = $request->star_value;
         $comments = $request->comments;
 
-        $result = $this->rateService->storeRate($user->id, $product_id, $star_value, $comments);
-        // dd($result);
+        $already_rate = $this->rateRepository->getRateCount($product_id, $user->id);
+        $is_update = false;
+
+        if ($already_rate > 0) {
+            // Nếu người dùng đã đánh giá sản phẩm rồi thì cho chỉnh sửa
+            $is_update = true;
+            // dd("Đã đánh giá, cho phép cập nhật");
+        }
+        // dd("Xử lý đánh giá");
+        $result = $this->rateService->storeRate($user->id, $product_id, $star_value, $comments, $is_update);
+
         if ($result) {
             return view('place_rate')->with('success', 'Đăng bình luận thành công!');
         }
@@ -73,28 +82,29 @@ class RateController extends Controller
         return view('place_rate')->with('error', 'Đăng bình luận thất bại!');
     }
 
-    // public function edit_rate($id)
-    // {
-    //     $user = Auth::user();
 
-    //     if (!$user)
-    //         return redirect()->route('login');
-    //     }
+    public function edit_rate($id)
+    {
+        $user = Auth::user();
 
-    //     $find_rate = $this->rateRepository->getRateValue($id, $user->id);
-    //     $products = $this->rateRepository->getProduct($id);
-    //     $total_rate = $this->rateRepository->getTotalRate($id);
-    //     $total_voter = $this->rateRepository->getTotalVoter($id);
+        if (!$user) {
+            return redirect()->route('login');
+        }
 
-    //     if ($total_voter > 0) {
-    //         $per_rate = $total_rate / $total_voter;
-    //     } else {
-    //         $per_rate = 0;
-    //     }
-    //     $per_rate = number_format($per_rate, 1);
+        $find_rate = $this->rateRepository->getRateValue($id, $user->id);
+        $products = $this->rateRepository->getProduct($id);
+        $total_rate = $this->rateRepository->getTotalRate($id);
+        $total_voter = $this->rateRepository->getTotalVoter($id);
 
-    //     return view('rate', compact('products', 'find_rate', 'total_rate', 'total_voter', 'per_rate'));
-    // }
+        if ($total_voter > 0) {
+            $per_rate = $total_rate / $total_voter;
+        } else {
+            $per_rate = 0;
+        }
+        $per_rate = number_format($per_rate, 1);
+
+        return view('rate', compact('products', 'find_rate', 'total_rate', 'total_voter', 'per_rate'));
+    }
 
     public function delete_rate()
     {

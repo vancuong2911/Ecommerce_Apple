@@ -1057,7 +1057,7 @@ menu
 
 #menu {
     margin-top: 120px;
-    background-color: #fffafa;
+    background-color: var(--light-blue-color);
     padding: 120px 0px;
 }
 
@@ -1068,7 +1068,16 @@ menu
 .card {
     margin: 0 auto;
     max-width: 100%;
-    min-height: 430px;
+    min-height: 450px;
+    overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.card_poster {
+    margin: 0 auto;
+    max-width: 100%;
     overflow: hidden;
     background-size: cover;
     background-repeat: no-repeat;

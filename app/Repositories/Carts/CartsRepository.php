@@ -1,69 +1,131 @@
 <?php
 
-namespace App\Repository\Carts;
+namespace App\Repositories\Carts;
 
-use App\Models\Products;
-use App\Repository\BaseRepository;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Cart;
+use App\Repositories\Carts\CartsRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
-class CartsRepository extends BaseRepository implements CartsRepositoryInterface
+class CartsRepository implements CartsRepositoryInterface
 {
-    public function getModel()
+    public function getCartByUserId($userId)
     {
-        return Products::class;
+        return Cart::join('products', 'products.id', '=', 'carts.product_id')
+            ->where('carts.user_id', $userId)
+            ->where('carts.product_order', 'no')
+            ->select('carts.*', 'products.image')
+            ->get();
     }
 
-    public function addProductToCart($product) {
-        $cart = session()->get('cart');
+    public function getCartsAmountByUserId($userId)
+    {
+        return DB::table('carts')
+            ->where('user_id', $userId)
+            ->where('product_order', 'no')
+            ->count();
+    }
 
-        if (!$cart) {
-            $cart = [
-                $product->id => [
-                    'name' => $product->name,
-                    'quantity' => 1,
-                    'price' => $product->price,
-                    'image' => $product->image,
-                ]
-            ];
-            session()->put('cart', $cart);
+    public function getCouponCodeByUserId($userId)
+    {
+        $cart = Cart::where('user_id', $userId)
+            ->where('product_order', 'no')
+            ->first();
+
+        if ($cart) {
+            return $cart->coupon_id;
+        }
+
+        return null;
+    }
+
+    public function getDiscountPriceByCouponCode($couponCode, $totalPrice)
+    {
+        $validate = DB::table('coupons')->where('code', $couponCode)->value('validate');
+        $today = date("Y-m-d");
+
+        if ($validate < $today) {
+            return 0;
         } else {
-            if (isset($cart[$product->id])) {
-                $cart[$product->id]['quantity'] += 1;
-                session()->put('cart', $cart);
-            } else {
-                $cart[$product->id] = [
-                    'name' => $product->name,
-                    'quantity' => 1,
-                    'price' => $product->price,
-                    'image' => $product->image,
-                ];
-                session()->put('cart', $cart);
+            $couponCodePrice = DB::table('coupons')->where('code', $couponCode)->value('percentage');
+            $discountPrice = (($totalPrice * $couponCodePrice) / 100);
+            return floor($discountPrice);
+        }
+    }
+
+    public function getTotalPriceByUserId($userId)
+    {
+        return DB::table('carts')
+            ->where('user_id', $userId)
+            ->where('product_order', 'no')
+            ->sum('subtotal');
+    }
+
+    public function getCouponDataByCode($couponCode)
+    {
+        return DB::table('coupons')->where('code', $couponCode)
+            ->first();
+    }
+
+    public function applyCouponDiscount($totalPrice, $couponData)
+    {
+        // dd($totalPrice);
+        if ($couponData != null) {
+            $validate = $couponData->validate;
+            $today = date("Y-m-d");
+
+            if ($validate >= $today) {
+                $couponPercentage = $couponData->percentage;
+                // dd($couponPercentage);
+                $discountPrice = (($totalPrice * $couponPercentage) / 100);
+                $discountPrice = floor($discountPrice);
+
+                $totalPrice = floatval($totalPrice);
+                $discountPrice = floatval($discountPrice);
+
+                $totalPrice = $totalPrice - $discountPrice;
+                $totalPrice = number_format($totalPrice, 2, '.', '');
             }
         }
+        return $totalPrice;
     }
 
-    public function updateProductInCart($product) {
-        $cart = session()->get('cart');
+    public function couponDiscountPrice($totalPrice, $couponData)
+    {
+        // dd($totalPrice);
+        if ($couponData != null) {
+            $validate = $couponData->validate;
+            $today = date("Y-m-d");
 
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity'] = $product->quantity;
-            session()->put('cart', $cart);
+            if ($validate >= $today) {
+                $couponPercentage = $couponData->percentage;
+                // dd($couponPercentage);
+                $discountPrice = (($totalPrice * $couponPercentage) / 100);
+                $discountPrice = floor($discountPrice);
+
+                $discountPrice = floatval($discountPrice);
+                $discountPrice = number_format($discountPrice, 2, '.', '');
+            }
         }
+        return $discountPrice;
     }
 
-    public function removeProductFromCart($productId) {
-        $cart = session()->get('cart');
-
-        if (isset($cart[$productId])) {
-            unset($cart[$productId]);
-            session()->put('cart', $cart);
-        }
+    public function getWithoutDiscountPriceByUserId(int $userId): int
+    {
+        return DB::table('carts')
+            ->where('user_id', $userId)
+            ->where('product_order', 'no')
+            ->sum('subtotal');
     }
 
-    public function getCart() {
-        return session()->get('cart');
+    public function getExtraCharges()
+    {
+        return DB::table('charges')->get();
     }
 
+    public function getTotalExtraCharge()
+    {
+        return DB::table('charges')->sum('price');
+    }
 }

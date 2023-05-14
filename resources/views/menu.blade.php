@@ -96,7 +96,7 @@
                                         <div class="cart-button d-flex">
                                             <div class="btn-left d-flex">
 
-                                                <form method="post" action="{{ route('cart.store', $product) }}">
+                                                <form method="post" action="{{ route('cart.store', $product->id) }}">
                                                     @csrf
 
                                                     @if ($product->available == 'Stock')

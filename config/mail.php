@@ -93,10 +93,10 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'truongvancuong.jvb@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'RMS Admin'),
+        'name' => env('MAIL_FROM_NAME', 'MiniStore Admin'),
     ],
 
-    'reply_to' => ['address' => 'truongvancuong.jvb@gmail.com', 'name' => 'RMS Admin'],
+    'reply_to' => ['address' => 'truongvancuong.jvb@gmail.com', 'name' => 'MiniStore Admin'],
 
     /*
     |--------------------------------------------------------------------------

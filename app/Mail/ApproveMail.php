@@ -22,7 +22,6 @@ class ApproveMail extends Mailable
     public function __construct($details)
     {
         $this->details = $details;
-
     }
 
     /**
@@ -32,7 +31,7 @@ class ApproveMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from RMS Admin')
-        ->view('mails.ApproveMail');
+        return $this->subject('Mail from MiniStore Admin')
+            ->view('mails.ApproveMail');
     }
 }

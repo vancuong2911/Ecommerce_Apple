@@ -14,44 +14,26 @@ class RatesService implements RatesServiceInterface
         $this->rateRepository = $rateRepository;
     }
 
-    public function storeRate($productId, $userId, $starValue, $comments)
-    {
-        $this->rateRepository->addRate($userId, $productId, $starValue, $comments);
-
-        $this->rateRepository->updateProductRate($productId, $starValue);
-
-        return true;
-    }
-
-    public function updateRate($userId, $productId, $starValue, $comments)
+    public function storeRate($userId, $productId, $starValue, $comments, $isUpdate = false)
     {
         $already_rate = $this->rateRepository->getRateCount($productId, $userId);
 
-        if ($already_rate > 0) {
-            // Nếu người dùng đã đánh giá sản phẩm rồi thì không cho đánh giá lại
-            return false;
+        if ($isUpdate && $already_rate > 0) {
+            $rate = $this->rateRepository->getUserRate($productId, $userId);
+            $this->rateRepository->updateProductRate($productId, $starValue);
+            $this->rateRepository->updateComment($rate->product_id, $comments);
+            $result = true;
+        } elseif (!$isUpdate && $already_rate == 0) {
+            $this->rateRepository->addRate($userId, $productId, $starValue, $comments);
+            $result = true;
+        } else {
+            $result = false;
         }
 
-        $result = $this->rateRepository->addRate($productId, $userId, $starValue, $comments);
-
-        if ($result) {
-            // Nếu lưu đánh giá thành công thì cập nhật lại điểm trung bình của sản phẩm
-            $total_rate = $this->rateRepository->getTotalRate($productId);
-            $total_voter = $this->rateRepository->getTotalVoter($productId);
-
-            if ($total_voter > 0) {
-                $per_rate = $total_rate / $total_voter;
-            } else {
-                $per_rate = 0;
-            }
-
-            $this->rateRepository->updateProductRate($productId, $per_rate);
-
-            return true;
-        }
-
-        return false;
+        return $result;
     }
+
+
 
     public function getRateValue($productId, $userId)
     {

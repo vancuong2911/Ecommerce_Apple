@@ -30,7 +30,7 @@ class UserAddedMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from RMS Admin')
-        ->view('mails.UserAddedMail');
+        return $this->subject('Mail from MiniStore Admin')
+            ->view('mails.UserAddedMail');
     }
 }

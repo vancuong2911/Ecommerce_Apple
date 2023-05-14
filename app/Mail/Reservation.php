@@ -28,8 +28,8 @@ class Reservation extends Mailable
      */
     public function build()
     {
-        return $this->from('rahathossenmanik@gmail.com', 'RMS Reservation')
-                ->view('emails.orders.shipped')
-                ->view('emails.shipped')->text('emails.shipped_plain');
+        return $this->from('truongvancuong.jvb@gmail.com', 'MiniStore Reservation')
+            ->view('emails.orders.shipped')
+            ->view('emails.shipped')->text('emails.shipped_plain');
     }
 }

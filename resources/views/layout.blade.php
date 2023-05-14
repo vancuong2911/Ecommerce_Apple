@@ -7,13 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/short.jpg') }}">
+    <link rel="shortcut icon" type="image/x-icon"
+        href="https://th.bing.com/th/id/R.66dacd13d1a786cad40e9197159da06a?rik=6q8PoTr4wsCZCg&pid=ImgRaw&r=0">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <title>Midway Dine - Your Favourite Foods</title>
+    <title>MiniStore - Apple</title>
 
     <!-- Additional CSS Files -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/bootstrap.min.css') }}">
@@ -38,14 +39,6 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
-
-    {{-- Js Clients --}}
-    {{-- <script src="{{ asset('clients/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('clients/js/jquery-1.11.0.min.js') }}"></script>
-    <script src="{{ asset('clients/js/modernizr.js') }}"></script>
-    <script src="{{ asset('clients/js/plugins.js') }}"></script>
-    <script src="{{ asset('clients/js/script.js') }}"></script>
-    <script src="{{ asset('clients/js/modernizr.js') }}"></script> --}}
 
     <script src="{{ asset('clients/js/jquery-1.11.0.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
@@ -266,10 +259,10 @@
                                 <a class="nav-link me-4" href="#company-services">Services</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#mobile-products">Products</a>
+                                <a class="nav-link me-4" href="#menu">Products</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#smart-watches">Watches</a>
+                                <a class="nav-link me-4" href="#smart-watches">Favourite</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="#yearly-sale">Sale</a>

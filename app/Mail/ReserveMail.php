@@ -32,7 +32,7 @@ class ReserveMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from RMS Admin')
-        ->view('mails.ReserveMail');
+        return $this->subject('Mail from MiniStore Admin')
+            ->view('mails.ReserveMail');
     }
 }

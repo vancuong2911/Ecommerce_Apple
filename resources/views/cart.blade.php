@@ -56,7 +56,8 @@
                                     <div class="cart-info d-flex flex-wrap align-items-center mb-4">
                                         <div class="col-lg-5">
                                             <div class="card-image">
-                                                <img src="images/cart-item1.jpg" alt="cloth" class="img-fluid">
+                                                <img src="{{ asset('clients/images_upload/Products/' . $product->image) }}"
+                                                    alt="cloth" class="img-fluid">
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
@@ -206,8 +207,6 @@
             </div>
 
             <div class="button-wrap">
-                {{-- <button class="btn btn-black btn-medium text-uppercase me-2 mb-3 btn-rounded-none">Update
-                    Cart</button> --}}
                 <a href="{{ url('/menu') }}"
                     class="btn btn-black btn-medium text-uppercase me-2 mb-3 btn-rounded-none"><i
                         class="fa fa-angle-left"></i>

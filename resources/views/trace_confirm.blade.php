@@ -1,7 +1,8 @@
 @extends('layout', ['title' => 'Home'])
 
 @section('page-content')
-    <div>
+    <div style="overflow-x: hidden;">
+        <br>
         <br>
         <br>
         <br>
@@ -145,9 +146,9 @@
                 @php $total += $product['price'] * $product['quantity'] @endphp
                 <tr>
                     <td>{{ $product->name }}</td>
-                    <td style="text-align:center">USD {{ $product->price }}</td>
+                    <td style="text-align:center"> {{ $product->price }} USD</td>
                     <td style="text-align:center">{{ $product->quantity }}</td>
-                    <td style="text-align:center">USD {{ $product->subtotal }}</td>
+                    <td style="text-align:center"> {{ $product->subtotal }} USD</td>
 
                 </tr>
             @endforeach
@@ -158,7 +159,7 @@
                     <td>{{ $charge->name }}</td>
                     <td style="text-align:center"></td>
                     <td style="text-align:center"></td>
-                    <td style="text-align:center">USD {{ $charge->price }}</td>
+                    <td style="text-align:center"> {{ $charge->price }} USD</td>
 
                 </tr>
             @endforeach
@@ -173,7 +174,7 @@
                     
                 @endphp
                 <td colspan="4" class="text-right">
-                    <h6><strong>Total USD {{ $without_discount_price }}</strong></h6>
+                    <h6><strong>Total: {{ $without_discount_price }} USD</strong></h6>
                 </td>
             </tr>
             <tr>
@@ -185,7 +186,7 @@
                     
                 @endphp
                 <td colspan="4" class="text-right">
-                    <h6><strong>Discount USD {{ $discount_price }}</strong></h6>
+                    <h6><strong>Discount {{ $discount_price }} USD</strong></h6>
                 </td>
             </tr>
             <tr>
@@ -199,7 +200,7 @@
                     
                 @endphp
                 <td colspan="4" class="text-right">
-                    <h3><strong>Total (With Discount)USD {{ $total_price }}</h2></strong></h3>
+                    <h3><strong>Total: {{ $total_price }} USD</h2></strong></h3>
                 </td>
             </tr>
             <tr>
