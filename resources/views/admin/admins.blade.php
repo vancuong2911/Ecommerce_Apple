@@ -1,8 +1,10 @@
 @extends('admin/adminlayout')
 
 @section('container')
-    <a href="/admin-add" type="button" class="btn btn-success" style="width:170px;height:35px;padding-top:9px;">+ Add Admin</a>
-
+    @if (Auth::user()->usertype == 1)
+        <a href="/admin-add" type="button" class="btn btn-success" style="width:170px;height:35px;padding-top:9px;">+ Add
+            Admin</a>
+    @endif
 
     <br>
     <br>
@@ -32,73 +34,39 @@
                         <table class="table">
                             <thead>
                                 <tr>
-
-
                                     <th> ID </th>
                                     <th> Name </th>
                                     <th> Email </th>
                                     <th> Phone</th>
-
-
                                     <th>Type</th>
                                     <th>Salary</th>
-
-
-
                                     <th> Action </th>
                                 </tr>
                             </thead>
                             <tbody>
-
                                 @foreach ($admins as $admin)
                                     <tr>
-
                                         <td>
                                             <span>{{ $admin->id }}</span>
                                         </td>
                                         <td> {{ $admin->name }} </td>
-
-
-
-
-
-
-
-
-
-
                                         <td> {{ $admin->email }}</td>
-
-
                                         <td> {{ $admin->phone }} </td>
-
-
                                         <td>
-
-
                                             @if ($admin->usertype == '1')
                                                 Super Admin
                                             @endif
-                                            @if ($admin->usertype == '3')
-                                                Sub Admin
-                                            @endif
-
-
-
                                         </td>
-
-
-
                                         <td>{{ $admin->salary }} USD</td>
 
-
-                                        <td>
-
-                                            <a href="{{ asset('/admin/edit/' . $admin->id) }}"
-                                                class="badge badge-outline-primary">Edit</a>
-                                            <a href="{{ asset('/admin/delete/' . $admin->id) }}"
-                                                class="badge badge-outline-danger" style="margin-left:10px;">Delete</a>
-                                        </td>
+                                        @if (Auth::user()->usertype == 1)
+                                            <td>
+                                                <a href="{{ asset('/admin/edit/' . $admin->id) }}"
+                                                    class="badge badge-outline-primary">Edit</a>
+                                                <a href="{{ asset('/admin/delete/' . $admin->id) }}"
+                                                    class="badge badge-outline-danger" style="margin-left:10px;">Delete</a>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
 

@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Repositories\Rates\RatesRepository;
 use App\Service\Interface\RatesServiceInterface;
+use App\Models\Rate;
+use App\Models\Product;
 
 class RatesService implements RatesServiceInterface
 {
@@ -17,11 +19,9 @@ class RatesService implements RatesServiceInterface
     public function storeRate($userId, $productId, $starValue, $comments, $isUpdate = false)
     {
         $already_rate = $this->rateRepository->getRateCount($productId, $userId);
-
+        // isUpdate sai và người dùng đã đánh giá
         if ($isUpdate && $already_rate > 0) {
-            $rate = $this->rateRepository->getUserRate($productId, $userId);
-            $this->rateRepository->updateProductRate($productId, $starValue);
-            $this->rateRepository->updateComment($rate->product_id, $comments);
+            $this->rateRepository->updateProductRate($userId, $productId, $starValue, $comments);
             $result = true;
         } elseif (!$isUpdate && $already_rate == 0) {
             $this->rateRepository->addRate($userId, $productId, $starValue, $comments);
@@ -33,6 +33,16 @@ class RatesService implements RatesServiceInterface
         return $result;
     }
 
+    public function calculateAndSaveAverageRating($productId)
+    {
+        // Lấy tổng số sao và số người đánh giá
+        $totalRate = Rate::where('product_id', $productId)->sum('star_value');
+        $totalVoter = Rate::where('product_id', $productId)->count();
+
+        // // Tính số sao trung bình
+        $averageRate = ($totalVoter > 0) ? $totalRate / $totalVoter : 0;
+        Rate::where('product_id', $productId)->update(['average_rating' => $averageRate]);
+    }
 
 
     public function getRateValue($productId, $userId)
@@ -65,8 +75,8 @@ class RatesService implements RatesServiceInterface
         return $this->rateRepository->getAllRates($productId);
     }
 
-    public function deleteRate($id)
+    public function deleteRate($id, $userId)
     {
-        return $this->rateRepository->delete($id);
+        return $this->rateRepository->delete($id, $userId);
     }
 }

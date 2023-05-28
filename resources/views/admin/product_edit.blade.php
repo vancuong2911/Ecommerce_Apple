@@ -37,6 +37,11 @@
                             <textarea class="form-control" value="{{ $product->description }}" name="description" id="exampleTextarea1"
                                 rows="5">{{ $product->description }}</textarea>
                         </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Description Short</label>
+                            <textarea class="form-control" value="{{ $product->description_short }}" name="description" id="exampleTextarea1"
+                                rows="5">{{ $product->description_short }}</textarea>
+                        </div>
 
                         <div class="form-group">
                             <label for="exampleInputPassword4">Price</label>
@@ -44,14 +49,14 @@
                                 id="exampleInputPassword4">
                         </div>
                         <div class="form-group">
-                            <label for="exampleSelectGender">Catagory</label>
-                            <select class="form-control" name="catagory" id="exampleSelectGender">
-                                <option value="iphone" @php if($product->catagory=="iphone"){ echo"selected"; } @endphp>
+                            <label for="exampleSelectGender">Category</label>
+                            <select class="form-control" name="category" id="exampleSelectGender">
+                                <option value="iphone" @php if($product->category=="iphone"){ echo"selected"; } @endphp>
                                     Iphone</option>
-                                <option value="appleWatch"
-                                    @php if($product->catagory=="appleWatch"){ echo"selected"; } @endphp>
+                                <option value="apple_watch"
+                                    @php if($product->category=="appleWatch"){ echo"selected"; } @endphp>
                                     Apple Watch</option>
-                                <option value="desktop" @php if($product->catagory=="desktop"){ echo"selected"; } @endphp>
+                                <option value="desktop" @php if($product->category=="desktop"){ echo"selected"; } @endphp>
                                     Desktop</option>
                             </select>
                         </div>
@@ -64,6 +69,17 @@
                                 </option>
 
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleSelectGender">Is Banner</label>
+                            <select class="form-control" name="is_banner" id="exampleSelectGender">
+                                <option value="0">No banner</option>
+                                <option value="1">Banner</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputPassword4">Quantity</label>
+                            <input type="number" name="quantity" class="form-control" id="exampleInputPassword4">
                         </div>
                         <div class="form-group">
                             <label for="exampleFormControlFile1">Image</label>

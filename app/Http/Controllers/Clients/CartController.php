@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Clients;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Cart;
+use App\Repositories\Products\ProductsRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -13,10 +14,12 @@ use App\Service\CartsService;
 class CartController extends Controller
 {
     protected $cartService;
+    protected $productsRepository;
 
-    public function __construct(CartsService $cartService)
+    public function __construct(CartsService $cartService, ProductsRepository $productsRepository)
     {
         $this->cartService = $cartService;
+        $this->productsRepository = $productsRepository;
     }
 
     public function index()
@@ -31,50 +34,29 @@ class CartController extends Controller
 
     public function store(Request $request, $id)
     {
-
-        if (!Auth::user()) {
-
-            return redirect()->route('login');
-        }
-
-        $product = Product::find($id);
-        $quantity = $request->number;
-        if (Cart::where('product_id', '=', $id)->where('user_id', Auth::user()->id)->where('product_order', 'no')->exists()) {
-            $quant = DB::table('carts')->where('product_id', '=', $id)->where('user_id', Auth::user()->id)->where('product_order', 'no')->value('quantity');
-
-            $quantity = $quantity + (int) $quant;
-
-            DB::table('carts')->where('product_id', '=', $id)->where('user_id', Auth::user()->id)->where('product_order', 'no')->update([
-                'quantity' => $quantity,
-                'subtotal' => $quantity * $product->price
-            ]);
-        } else {
-            DB::table('carts')->insert([
-                'product_id' => $product->id,
-                'user_id' => Auth::user()->id,
-                'product_order' => "no",
-                'shipping_address' => 'N/A',
-                'name' => $product->name,
-                'price' => $product->price,
-                'quantity' => $quantity,
-                'subtotal' => $quantity * $product->price
-            ]);
-        }
-
-
-        return back();
+        return $this->cartService->store($request, $id);
     }
 
     public function destroy($id)
     {
-        $product = Cart::find($id);
-        $product->delete();
-
-        return redirect()->route('cart');
+        return $this->cartService->destroy($id);
     }
 
     public function checkout($total)
     {
         return view("checkout", compact('total'));
+    }
+    public function buyNow($id)
+    {
+        // Carts: các sản phẩm được cho vào giỏ hàng
+        $carts = $this->cartService->getCartData(Auth::user()->id);
+        dd($carts);
+        // Product: sản phẩm vừa được click vào buy now
+        $product = $this->productsRepository->showOneProductRate($id)->toArray();
+
+        // Đưa sản phẩm vào cart
+        dd(array_merge($carts, $product));
+
+        return view("cart", $carts);
     }
 }

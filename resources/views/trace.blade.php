@@ -3,10 +3,14 @@
 @section('page-content')
     <div>
         <br>
+        <br>
+        <br>
+        <br>
         @if (Session::has('wrong'))
             <div class="alert">
                 <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                <strong>Opps !</strong> {{ Session::get('wrong') }}
+                <strong>Opps !</strong> {{ Session::get('wrong') }} <br>
+                <span>Bạn sẽ tìm thấy ở <a href="http://127.0.0.1:8000/my-order">đây</a> tại cột Invoice No.</span>
             </div>
         @endif
         @if (Session::has('success'))

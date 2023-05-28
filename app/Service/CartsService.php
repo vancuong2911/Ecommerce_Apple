@@ -6,8 +6,9 @@ use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Carts\CartsRepository;
+use App\Service\Interface\CartsServiceInterface;
 
-class CartsService
+class CartsService implements CartsServiceInterface
 {
 
     protected $cartRepository;
@@ -17,16 +18,46 @@ class CartsService
         $this->cartRepository = $cartRepository;
     }
 
+    public function store($request, $id)
+    {
+        if (!Auth::user()) {
+            return redirect()->route('login');
+        }
+
+        $product = Product::find($id);
+        $productId = $product->id;
+        $quantity = $request->number;
+
+        if (Cart::where('product_id', '=', $id)->where('user_id', Auth::user()->id)->where('product_order', 'no')->exists()) {
+            $quant = $this->cartRepository->getCartQuantity($productId,  Auth::user()->id) ?? 1;
+
+            $quantity = $quantity + (int) $quant;
+
+            $this->cartRepository->updateCartQuantity($id, Auth::user()->id, $quantity, $product->price);
+        } else {
+            $this->cartRepository->createCart($id, Auth::user()->id, $quantity, $product->price, $product);
+        }
+        return back()->with('message', 'Add product success');
+    }
+
+    public function destroy($id)
+    {
+        $product = $this->cartRepository->getCartById($id);
+        $product->delete();
+
+        return redirect()->route('cart');
+    }
+
     public function getCartData($userId)
     {
-        $carts = $this->cartRepository->getCartByUserId($userId);
+        $carts = $this->cartRepository->getCartByUserId($userId)->toArray();
+        // dd($carts);
 
         $cartAmount = $this->cartRepository->getCartsAmountByUserId($userId);
 
         $couponCode = $this->cartRepository->getCouponCodeByUserId($userId);
 
         $total_price = $this->cartRepository->getTotalPriceByUserId($userId);
-        // dd($total_price);
 
         $without_discount_price = $this->cartRepository->getWithoutDiscountPriceByUserId($userId);
 
@@ -34,7 +65,6 @@ class CartsService
             $couponData = $this->cartRepository->getCouponDataByCode($couponCode);
 
             $discount_price = $this->cartRepository->couponDiscountPrice($total_price, $couponData);
-            // dd($total_price);
             $total_price = $total_price - $discount_price;
         } else {
             $discount_price = 0;
@@ -47,29 +77,6 @@ class CartsService
         return compact('carts', 'total_price', 'discount_price', 'cartAmount', 'extra_charge', 'total_extra_charge', 'without_discount_price');
     }
 
-    public function addToCart(int $productId, int $quantity = 1): void
-    {
-        $product = Product::find($productId);
-
-        if (!$product) {
-            return;
-        }
-
-        $cart = $this->getCart();
-
-        $cartItem = $cart->items()->where('product_id', $productId)->first();
-
-        if ($cartItem) {
-            $cartItem->quantity += $quantity;
-            $cartItem->save();
-        } else {
-            $cart->items()->create([
-                'product_id' => $productId,
-                'quantity' => $quantity,
-                'price' => $product->price,
-            ]);
-        }
-    }
 
     public function getCart(): Cart
     {

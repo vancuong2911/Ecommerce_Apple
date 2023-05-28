@@ -1,47 +1,50 @@
 @extends('layout', ['title' => 'Home'])
 
 @section('page-content')
+    <br>
+    <br>
+    @if (Session::has('wrong'))
+        <div class="alert">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <strong>Opps !</strong> {{ Session::get('wrong') }} <br>
+        </div>
+    @endif
+    @if (Session::has('success'))
+        <div class="success">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <strong>Congrats !</strong> {{ Session::get('success') }}
+        </div>
+    @endif
     <div class="container">
-
         <div class="row justify-content-center">
-            <div>
-
-                <p id="text-area" style="font-size:50px;marigin-bottom:-50px;">Please, rate our service</p>
-
+            <div style="margin-top: 150px">
+                <p id="text-area" style="font-size:50px;marigin-bottom:-20px;">Please, rate our service</p>
             </div>
         </div>
-        <div class="container mt-12" style="padding-top: 180px;">
+        <div class="container mt-12" style="padding-top: 60px;">
             <div class="row bg-light-blue p-5 rounded">
                 <div class="col-md-3">
-                    <img src="{{ asset('clients/images_upload/products/' . $products->image) }}" class="w-100">
+                    <img src="{{ asset('clients/images_upload/products/' . $product->image) }}" class="w-100">
                 </div>
-                <?php
-                
-                Session::put('product_id', $products->id);
-                
-                $whole = floor($per_rate); // 1
-                $fraction = $per_rate - $whole;
-                
-                ?>
-
-
                 <div class="col-md-9">
                     <span class="product_rating">
-                        @for ($i = 1; $i <= $whole; $i++)
-                            <i class="fa fa-star "></i>
+                        @php
+                            $per_rate = number_format($product->average_rating, 1);
+                            $roundedRating = floor($product->average_rating);
+                        @endphp
+                        @for ($i = 1; $i <= $roundedRating; $i++)
+                            <i class="fa fa-star " style="color: #E9C46A;"></i>
                         @endfor
 
-                        @if ($fraction != 0)
-                            <i class="fa fa-star-half"></i>
+                        @if ($roundedRating != 0 && $roundedRating != $product->average_rating)
+                            <i class="fa fa-star-half" style="color: #E9C46A;"></i>
                         @endif
-
-
                         <span class="rating_avg">({{ $per_rate }})</span>
                     </span>
                     <div class="section-heading">
-                        <h2>{{ $products->name }}</h2>
-                        <h4>{{ $products->price }}$</h4>
-                        <p>{{ $products->description }}</p>
+                        <h2>{{ $product->name }}</h2>
+                        <h4>{{ $product->price }}$</h4>
+                        <p>{{ $product->description }}</p>
                     </div>
 
                     <form method="POST" action="{{ route('store_rate') }}">
@@ -60,7 +63,7 @@
 
                         <div class="form-group">
                             <h4>Bình luận:</h4>
-                            <textarea name="comments" id="comments" class="form-control"></textarea>
+                            <textarea name="comments" id="comments" class="form-control" required></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Đăng bình luận</button>

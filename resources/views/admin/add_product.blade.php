@@ -33,26 +33,40 @@
                         <label for="exampleTextarea1">Description</label>
                         <textarea class="form-control" name="description" id="exampleTextarea1" rows="5"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="exampleTextarea1">Description Short</label>
+                        <textarea class="form-control" name="description_short" id="exampleTextarea1" rows="5"></textarea>
+                    </div>
 
                     <div class="form-group">
                         <label for="exampleInputPassword4">Price</label>
                         <input type="number" name="price" class="form-control" id="exampleInputPassword4">
                     </div>
                     <div class="form-group">
-                        <label for="exampleSelectGender">Catagory</label>
-                        <select class="form-control" name="catagory" id="exampleSelectGender">
+                        <label for="exampleSelectGender">Category</label>
+                        <select class="form-control" name="category" id="exampleSelectGender">
                             <option value="iphone">Iphone</option>
                             <option value="ppleWatch">Apple Watch</option>
                             <option value="desktop">Desktop</option>
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="exampleSelectGender">Is Banner</label>
+                        <select class="form-control" name="is_banner" id="exampleSelectGender">
+                            <option value="0">No banner</option>
+                            <option value="1">Banner</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="exampleSelectGender">Available</label>
                         <select class="form-control" name="available" id="exampleSelectGender">
                             <option>Stock</option>
-                            <option>Out of Stock</option>
-
+                            <option>Out Of Stock</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword4">Quantity</label>
+                        <input type="number" name="quantity" class="form-control" id="exampleInputPassword4">
                     </div>
                     <div class="form-group">
                         <label for="exampleFormControlFile1">Image</label>
@@ -67,9 +81,7 @@
         </div>
 
     </div>
-@endsection()
-
-
+@endsection
 
 <style>
     .alert {

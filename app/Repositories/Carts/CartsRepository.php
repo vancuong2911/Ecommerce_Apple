@@ -10,6 +10,61 @@ use Illuminate\Support\Facades\DB;
 
 class CartsRepository implements CartsRepositoryInterface
 {
+    public function getCartById($id)
+    {
+        return Cart::find($id);
+    }
+    public function getProductbyUserId()
+    {
+        return DB::table('carts')->where('user_id', Auth::user()->id)->where('product_order', 'no')->get();
+    }
+    public function updateCartQuantity($productId, $userId, $quantity, $productPrice)
+    {
+        DB::table('carts')
+            ->where('product_id', '=', $productId)
+            ->where('user_id', $userId)
+            ->where('product_order', 'no')
+            ->update([
+                'quantity' => $quantity,
+                'subtotal' => $quantity * $productPrice
+            ]);
+    }
+    public function getRates()
+    {
+        return DB::table('rates')
+            ->join('users', 'rates.user_id', '=', 'users.id')
+            ->select('rates.*', 'users.name')
+            ->get();
+    }
+
+    public function getAllRates()
+    {
+        return DB::table('rates')->get();
+    }
+
+    public function createCart($productId, $userId, $quantity, $productPrice, $product)
+    {
+        DB::table('carts')->insert([
+            'product_id' => $productId,
+            'user_id' => $userId,
+            'product_order' => "no",
+            'shipping_address' => 'N/A',
+            'name' => $product->name,
+            'price' => $productPrice,
+            'quantity' => $quantity,
+            'subtotal' => $quantity * $productPrice,
+        ]);
+    }
+
+    public function getCartQuantity($productId, $userId)
+    {
+        return DB::table('carts')
+            ->where('product_id', $productId)
+            ->where('user_id', $userId)
+            ->where('product_order', 'no')
+            ->value('quantity');
+    }
+
     public function getCartByUserId($userId)
     {
         return Cart::join('products', 'products.id', '=', 'carts.product_id')
@@ -70,7 +125,6 @@ class CartsRepository implements CartsRepositoryInterface
 
     public function applyCouponDiscount($totalPrice, $couponData)
     {
-        // dd($totalPrice);
         if ($couponData != null) {
             $validate = $couponData->validate;
             $today = date("Y-m-d");
@@ -127,5 +181,54 @@ class CartsRepository implements CartsRepositoryInterface
     public function getTotalExtraCharge()
     {
         return DB::table('charges')->sum('price');
+    }
+
+    public function getPendingOrderCount(): int
+    {
+        return DB::table('carts')
+            ->where('product_order', 'yes')
+            ->groupBy('invoice_no')
+            ->count();
+    }
+
+    public function getProcessingOrderCount(): int
+    {
+        return DB::table('carts')
+            ->where('product_order', 'approve')
+            ->groupBy('invoice_no')
+            ->count();
+    }
+
+    public function getCancelledOrderCount(): int
+    {
+        return DB::table('carts')
+            ->where('product_order', 'cancel')
+            ->groupBy('invoice_no')
+            ->count();
+    }
+
+    public function getCompleteOrderCount(): int
+    {
+        return DB::table('carts')
+            ->where('product_order', 'delivery')
+            ->groupBy('invoice_no')
+            ->count();
+    }
+
+    public function getTotal(): float
+    {
+        return DB::table('carts')->where('product_order', 'yes')->sum('subtotal');
+    }
+
+    public function getCashOnDeliveryTotal(): float
+    {
+        return DB::table('carts')
+            ->where('pay_method', 'Cash On Delivery')
+            ->sum('subtotal');
+    }
+
+    public function getOnlinePaymentTotal(): float
+    {
+        return $this->getTotal() - $this->getCashOnDeliveryTotal();
     }
 }

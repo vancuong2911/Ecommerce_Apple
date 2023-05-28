@@ -4,6 +4,7 @@ namespace App\Repositories\Rates;
 
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Rates\RatesRepositoryInterface;
+use App\Models\Rate;
 
 class RatesRepository implements RatesRepositoryInterface
 {
@@ -14,12 +15,18 @@ class RatesRepository implements RatesRepositoryInterface
 
     public function getRateValue($productId, $userId)
     {
-        return DB::table('rates')->where('product_id', $productId)->where('user_id', $userId)->value('star_value');
+        $query = Rate::where('product_id', $productId);
+
+        if ($userId !== null) {
+            $query->where('user_id', $userId);
+        }
+
+        return $query->sum('star_value');
     }
 
     public function getTotalRate($productId)
     {
-        return DB::table('rates')->where('product_id', $productId)->sum('star_value');
+        return Rate::where('product_id', $productId)->sum('star_value');
     }
 
     public function getUserRate($productId, $userId)
@@ -34,27 +41,30 @@ class RatesRepository implements RatesRepositoryInterface
 
     public function getTotalVoter($productId)
     {
-        return DB::table('rates')->where('product_id', $productId)->count();
+        return Rate::where('product_id', $productId)->count();
     }
 
     public function getRate($productId)
     {
-        return DB::table('rates')->where('product_id', $productId)->first();
+        return Rate::where('product_id', $productId)->first();
     }
 
     public function getAllRates($productId)
     {
-        return DB::table('rates')->where('product_id', $productId)->get();
+        return Rate::where('product_id', $productId)->get();
     }
 
     public function getRateCount($productId, $userId)
     {
-        return DB::table('rates')->where('product_id', $productId)->where('user_id', $userId)->count();
+        return Rate::where('product_id', $productId)->where('user_id', $userId)->count();
     }
 
-    public function getComments($productId)
+    public function getComments($productId, $userId)
     {
-        return DB::table('rates')->select('comments', 'created_at')->where('product_id', $productId)->whereNotNull('comments')->get();
+        return Rate::select('comments', 'created_at')
+            ->where('product_id', $productId)
+            ->where('user_id', $userId)
+            ->whereNotNull('comments')->get();
     }
 
     public function addRate($userId, $productId,  $starValue, $comments)
@@ -65,29 +75,35 @@ class RatesRepository implements RatesRepositoryInterface
             'star_value' => $starValue,
             'comments' => $comments,
         ];
-
-        return DB::table('rates')->insert($data);
+        $rate = Rate::create($data);
+        return $rate;
     }
 
-    public function updateProductRate($productId, $newRate)
+    public function updateProductRate($userId, $productId, $newRate, $comments)
     {
-        return DB::table('rates')->where('product_id', $productId)->update(['star_value' => $newRate]);
-    }
+        $rate = Rate::where('product_id', $productId)
+            ->where('user_id', $userId)
+            ->first();
 
-    public function updateComment($productId, $comments)
-    {
-        $product = $this->getProduct($productId);
-        $rate = DB::table('rates')->where('product_id', $product->id)->first();
-
-        if ($rate && $rate->comments != $comments) {
-            return DB::table('rates')->where('product_id', $product->id)->update(['comments' => $comments]);
+        if ($rate) {
+            $rate->star_value = $newRate;
+            $rate->comments = $comments;
+            $rate->save();
+            return $rate;
         }
 
-        return false;
+        return null;
     }
 
-    public function delete($id)
+    public function delete($id, $userId)
     {
-        return DB::table('rates')->where('id', $id)->delete();
+        $rate = Rate::where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($rate) {
+            $rate->delete();
+            return true;
+        }
     }
 }

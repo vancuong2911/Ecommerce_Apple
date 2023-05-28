@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class Reservation extends Mailable
+class Contact extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +28,7 @@ class Reservation extends Mailable
      */
     public function build()
     {
-        return $this->from('truongvancuong.jvb@gmail.com', 'MiniStore Reservation')
+        return $this->from('truongvancuong.jvb@gmail.com', 'MiniStore Contact')
             ->view('emails.orders.shipped')
             ->view('emails.shipped')->text('emails.shipped_plain');
     }

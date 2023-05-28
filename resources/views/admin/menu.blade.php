@@ -67,7 +67,7 @@
                 <h5 class="card-title">{{ $product->name }}</h5>
                 <p class="card-text">{{ $product->description }}</p>
 
-                <p style="text-transform:capitalize;">Catagory : {{ $product->catagory }}</p>
+                <p style="text-transform:capitalize;">Category : {{ $product->category }}</p>
 
                 <p style="text-transform:capitalize;">Price : {{ $product->price }} USD</p>
                 @if ($product->available == 'Stock')
@@ -77,6 +77,7 @@
                 @if ($product->available != 'Stock')
                     <p style="text-transform:capitalize;">Available : Out of Stock </p>
                 @endif
+                <span class="rating_avg">Quantity : {{ $product->quantity }}</span>
 
 
                 <span class="rating_avg">Rating : {{ $per_rate }}</span>

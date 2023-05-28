@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Products\ProductsRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\HomeAdminController;
 
 class ProductController extends Controller
 {
@@ -13,14 +15,14 @@ class ProductController extends Controller
     public function __construct(ProductsRepository $productRepository)
     {
         $this->productRepository = $productRepository;
+        $this->middleware('auth');
     }
     public function index()
     {
         $total_products = $this->productRepository->getCountProducts();
         $fraction = $total_products % 3;
-        $products = $this->productRepository->getMenu();
+        $products = $this->productRepository->getProducts();
         $fraction_products = DB::table('products')->latest()->get();
-
         return view('admin.menu', compact('products', 'fraction', 'total_products', 'fraction_products'));
     }
 
@@ -31,14 +33,11 @@ class ProductController extends Controller
 
     public function product_add_process(Request $req)
     {
+        if ($req->price < 0 || $req->quantity < 0) {
 
-
-        if ($req->price < 0) {
-
-            session()->flash('wrong', 'Negative Price value do not accept !');
+            session()->flash('wrong', 'Input cannot be negative!');
             return back();
         }
-
 
         $this->validate(request(), [
 
@@ -53,10 +52,19 @@ class ProductController extends Controller
         $data = array();
         $data['name'] = $req->name;
         $data['description'] = $req->description;
+        $data['description_short'] = $req->description_short;
         $data['price'] = $req->price;
-        $data['catagory'] = $req->catagory;
-        $data['available'] = $req->available;
+        $data['category'] = $req->category;
+        $data['quantity'] = $req->quantity;
+        $data['is_banner'] = $req->is_banner;
         $data['image'] = $new_image;
+        $data['available'] = $req->available;
+        if ($data['quantity'] == 0) {
+            $data['available'] = "Out Of Stock";
+        }
+        if ($data['available'] == "Out Of Stock") {
+            $data['quantity'] = 0;
+        }
 
         $insert = DB::table('products')->Insert($data);
 
@@ -82,9 +90,20 @@ class ProductController extends Controller
         $data = array();
         $data['name'] = $req->name;
         $data['description'] = $req->description;
+        $data['description_short'] = $req->description_short;
         $data['price'] = $req->price;
-        $data['catagory'] = $req->catagory;
+        $data['category'] = $req->category;
         $data['available'] = $req->available;
+        $data['quantity'] = $req->quantity;
+        $data['is_banner'] = $req->is_banner;
+
+        if ($data['quantity'] == 0) {
+            $data['available'] = "Out Of Stock";
+        }
+
+        if ($data['available'] == "Out Of Stock") {
+            $data['quantity'] = 0;
+        }
 
         if ($req->image != NULL) {
 

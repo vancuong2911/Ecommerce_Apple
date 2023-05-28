@@ -37,7 +37,7 @@
 
                                     <th> ID </th>
                                     <th> Name </th>
-                                    <th> Amount </th>
+                                    <th> Price </th>
 
 
                                     <th> Action </th>
@@ -52,7 +52,7 @@
                                             <span>{{ $charge->id }}</span>
                                         </td>
                                         <td> {{ $charge->name }} </td>
-
+                                        <td> {{ $charge->price }} $</td>
                                         <td>
 
                                             <a href="{{ asset('/admin/charge/edit/' . $charge->id) }}"

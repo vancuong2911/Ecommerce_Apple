@@ -4,6 +4,7 @@ namespace App\Repositories\Rates;
 
 interface RatesRepositoryInterface
 {
+
     public function getRateValue($productId, $userId);
 
     public function getProduct($productId);
@@ -16,15 +17,15 @@ interface RatesRepositoryInterface
 
     public function getRateCount($productId, $userId);
 
-    public function getComments($productId);
+    public function getComments($productId, $userId);
 
     public function addRate($productId, $userId, $starValue, $comments);
 
-    public function updateProductRate($productId, $newRate);
+    public function updateProductRate($userId, $productId, $newRate, $comments);
 
     // public function create($data);
 
     // public function update($id, $data);
 
-    public function delete($id);
+    public function delete($id, $userId);
 }

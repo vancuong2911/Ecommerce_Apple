@@ -6,6 +6,6 @@
     <br>
     <br>
     <br>
-    <h1>Your Reservation have been Placed Successfully</h1><br>
+    <h1>Your Contact have been Placed Successfully</h1><br>
 </div>
 @endsection

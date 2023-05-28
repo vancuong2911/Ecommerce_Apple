@@ -2,19 +2,17 @@
 
 namespace App\Repositories\Products;
 
-interface ProductsRepositoryInterface
+use App\Repositories\RepositoryInterface;
+
+interface ProductsRepositoryInterface extends RepositoryInterface
 {
-    public function getMenu();
+    public function getProducts();
+
+    public function getCountProducts();
 
     public function getIphoneProducts();
 
     public function getAppleWatchProducts();
 
     public function getDesktopProducts();
-
-    public function getAboutUs();
-
-    public function getBanners();
-
-    public function getRates();
 }

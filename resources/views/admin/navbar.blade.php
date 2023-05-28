@@ -2,8 +2,8 @@
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-            <a class="sidebar-brand brand-logo" href="{{ url('redirects') }}">Admin</a>
-            <a class="sidebar-brand brand-logo-mini" href="{{ url('redirects') }}"><img
+            <a class="sidebar-brand brand-logo" href="{{ url('admin/home') }}">Admin</a>
+            <a class="sidebar-brand brand-logo-mini" href="{{ url('admin/home') }}"><img
                     src="admin/assets/images/logo-mini.svg" alt="logo" /></a>
         </div>
         <ul class="nav">
@@ -12,7 +12,7 @@
                 <!-- <span class="nav-link">Navigation</span>-->
             </li>
             <li class="nav-item menu-items">
-                <a class="nav-link" href="{{ url('redirects') }}">
+                <a class="nav-link" href="{{ url('admin/home') }}">
                     <span class="menu-icon">
                         <i class="mdi mdi-speedometer"></i>
                     </span>

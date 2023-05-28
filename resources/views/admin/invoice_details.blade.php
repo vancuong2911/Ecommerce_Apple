@@ -150,18 +150,12 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Order Process</h4>
-
-
-
-
                         <form class="forms-sample" action="{{ asset('/invoice/approve/' . $product->invoice_no) }}"
                             method="post" enctype="multipart/form-data">
-
                             @csrf
-
                             <div class="form-group">
                                 <label for="exampleInputName1">Delivery Time</label>
-                                <input type="datetime-local" name="time" value="2022-07-28T19:30"
+                                <input type="datetime-local" name="time" value="2023-05-19T15:30"
                                     class="form-control" id="exampleInputName1">
                             </div>
 
@@ -170,11 +164,7 @@
                             <a href="{{ asset('/invoice/cancel-order/' . $product->invoice_no) }}"
                                 class="btn btn-danger">Cancel Order</a>
                         </form>
-
                     @break;
-
-
-
                 </div>
             </div>
 

@@ -32,10 +32,12 @@
             <tbody>
                 @php $total = 0 @endphp
                 @foreach ($carts as $product)
-                    @php $total += $product['price'] * $product['quantity'] @endphp
+                    @php
+                        $total += $product['price'] * $product['quantity'];
+                    @endphp
                     <tr>
                         <td>{{ $product->purchase_date }}</td>
-                        <td>{{ $product->invoice_no }}</td>
+                        <td>{{ $product->invoice_no ?? null }}</td>
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->pay_method }}</td>
                         <td style="text-align:center">USD {{ $product->price }}</td>

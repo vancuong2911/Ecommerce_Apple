@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Clients;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use App\Mail\OrderShipped;
 use App\Repositories\Carts\CartsRepository;
 use Illuminate\Support\Facades\Mail;
 
@@ -14,10 +13,10 @@ use App\Service\ShipmentsService;
 use App\Repositories\Orders\OrdersRepository;
 use App\Repositories\Products\ProductsRepository;
 
-// use PDF;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 
 class ShipmentController extends Controller
@@ -46,11 +45,41 @@ class ShipmentController extends Controller
 
     public function send(Request $request, $total)
     {
+        $total = Session::get('total');
+
+        $invoice = Session::get('invoice');
+        $user = Auth::user();
+        $post_data = array();
+        $post_data['total_amount'] = $total;
+        $post_data['currency'] = "USD";
+        $post_data['tran_id'] = $invoice; // tran_id mã hóa đơn
+
+        # Thông tin khách hàng
+        $post_data['cus_name'] = $user->name;
+        $post_data['cus_email'] = $user->email;
+        $post_data['cus_add1'] = $request->address;
+        $post_data['cus_phone'] = $user->phone;
+
+        // Trạng thái đang chờ xử lý
+        // Lưu id người dùng
+        $update_product = DB::table('orders')
+            ->where('transaction_id', $post_data['tran_id'])
+            ->updateOrInsert([
+                'name' => $post_data['cus_name'],
+                'email' => $post_data['cus_email'],
+                'phone' => $post_data['cus_phone'],
+                'amount' => $post_data['total_amount'],
+                'status' => 'Pending',
+                'address' => $post_data['cus_add1'],
+                'transaction_id' => $post_data['tran_id'],
+                'currency' => $post_data['currency']
+            ]);
+
         $orderData = $this->ordersRepository->createOrderData($request->address);
         $invoice = $orderData['invoice'];
         $data = $orderData['data'];
 
-        $products = $this->productsRepository->getProductbyUserId();
+        $products = DB::table('carts')->where('user_id', Auth::user()->id)->where('product_order', 'no')->get();
 
         $total = $this->ordersRepository->calculateTotalPrice(Auth::user()->id);
         $total_extra_charge = DB::table('charges')->sum('price');
@@ -74,11 +103,14 @@ class ShipmentController extends Controller
         } else {
             $total = $this->ordersRepository->calculateTotalPrice(Auth::user()->id);
         }
+        $cart = $this->cartsSerivce->getCartData(Auth::user()->id);
 
         $carts = DB::table('carts')->where('user_id', Auth::user()->id)->where('product_order', 'no')->update($data);
 
-        $discount_price = $cart["discount_price"];
+        $coupon_code_price = DB::table('coupons')->where('code', $coupon_code)->value('percentage');
+        $coupon_code_price = floor($coupon_code_price);
 
+        $discount_price = $cart["discount_price"];
 
         $data["title"] = "From MiniStore admin";
         $data["body"] = "Your reservation have been Placed Successfully";
@@ -89,11 +121,19 @@ class ShipmentController extends Controller
         if ($invoice == NULL) {
             $invoice = "MiniStore";
         }
+        $extra_charge = DB::table('charges')->get();
 
-        $pdf = PDF::loadView('mails.PaymentMail', ['data' => $data]);
+        Session::put('products', $products);
+        Session::put('invoice', $invoice);
+        Session::put('total', $total);
+        Session::put('extra_charge', $extra_charge);
+        Session::put('discount_price', $discount_price);
+        Session::put('without_discount_price', $without_discount_price);
+        Session::put('date', date("Y-m-d"));
+
+        $pdf = PDF::loadView('mails.PaymentMail', ['data' => $data, 'products' => $products]);
 
         if ($carts) {
-
             Mail::send('mails.PaymentMail', ['data' => $data], function ($message) use ($data, $pdf) {
                 $message->to(Auth::user()->email, Auth::user()->email)
                     ->subject($data["title"])
@@ -106,19 +146,18 @@ class ShipmentController extends Controller
 
     public function my_order()
     {
-
         if (!Auth::user()) {
 
             return redirect()->route('login');
         }
 
         $carts = Cart::all()->where('user_id', Auth::user()->id)->where('product_order', '!=', 'no');
+
         $total_price = DB::table('carts')->where('user_id', Auth::user()->id)->where('product_order', '!=', 'no')->sum('subtotal');
         return view("my_order", compact('carts', 'total_price'));
     }
     public function trace()
     {
-
         if (!Auth::user()) {
 
             return redirect()->route('login');
@@ -131,7 +170,6 @@ class ShipmentController extends Controller
 
     public function trace_confirm(Request $req)
     {
-
         if (!Auth::user()) {
 
             return redirect()->route('login');
@@ -169,7 +207,6 @@ class ShipmentController extends Controller
             $discount_price = (($total_price * $coupon_code_price) / 100);
             $discount_price = floor($discount_price);
 
-
             $total_price = $total_price - $discount_price;
         } else {
 
@@ -184,15 +221,11 @@ class ShipmentController extends Controller
         return view("trace_confirm", compact('carts', 'total_price', 'extra_charge', 'discount_price', 'without_discount_price'));
     }
 
-
     public function coupon_apply(Request $req)
     {
-
-
         $coupon_code = DB::table('coupons')->where('code', $req->code)->count();
 
         if ($coupon_code == 0) {
-
             session()->flash('wrong', 'Wrong Coupon Code !');
             return back();
         }
@@ -215,11 +248,10 @@ class ShipmentController extends Controller
         if ($update_coupon) {
             session()->flash('success', 'Apply discount code successfully !');
 
-
             return redirect('/cart');
         } else {
-
             session()->flash('wrong', 'Already applied this code !');
+
             return back();
         }
     }

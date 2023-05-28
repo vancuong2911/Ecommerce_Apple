@@ -78,7 +78,7 @@
                             <label for="country">Country</label>
                             <select class="custom-select d-block w-100" id="country" required>
                                 <option value="">Choose...</option>
-                                <option value="Bangladesh">Việt Nam</option>
+                                <option value="Việt Nam">Việt Nam</option>
                             </select>
                             <div class="invalid-feedback">
                                 Please select a valid country.
@@ -88,7 +88,7 @@
                             <label for="state">State</label>
                             <select class="custom-select d-block w-100" id="state" required>
                                 <option value="">Choose...</option>
-                                <option value="Dhaka">Hà Nội</option>
+                                <option value="Hà Nội">Hà Nội</option>
                             </select>
                             <div class="invalid-feedback">
                                 Please provide a valid state.

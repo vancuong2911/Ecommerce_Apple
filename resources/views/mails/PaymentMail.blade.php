@@ -10,7 +10,6 @@
                 $without_discount_price = Session::get('without_discount_price');
                 $discount_price = Session::get('discount_price');
                 $extra_charge = Session::get('extra_charge');
-                $qrcode = Session::get('qrcode');
                 $invoice = Session::get('invoice');
                 $date = Session::get('date');
                 
@@ -96,9 +95,6 @@
                             <td style="margin-left:20px;">{{ $charge->price }} USD</td>
                         </tr>
                     @endforeach
-                    <tr>
-                        <td colspan="4"></td>
-                    </tr>
                     <tr>
                         <td colspan="2">&nbsp;</td>
                         <td><strong>Total</strong></td>

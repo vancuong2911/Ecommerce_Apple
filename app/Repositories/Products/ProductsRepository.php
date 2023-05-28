@@ -2,61 +2,75 @@
 
 namespace App\Repositories\Products;
 
+use App\Models\Product;
+use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Repositories\Products\ProductsRepositoryInterface;
 
-class ProductsRepository
+class ProductsRepository extends BaseRepository implements ProductsRepositoryInterface
 {
-    public function getMenu()
+    public function getModel()
     {
-        return DB::table('products')->where('active', '0')->get();
+        return Product::class;
+    }
+    public function getProducts()
+    {
+        // Query Builder
+        return $this->model->where('active', '0')->get();
+    }
+
+    public function showProductsRate($category)
+    {
+        $query = $this->model::leftJoin('rates', 'products.id', '=', 'rates.product_id')
+            ->select('products.*', DB::raw('COALESCE(AVG(rates.star_value), 0) as average_rating'))
+            ->where('active', '0')
+            ->groupBy('products.id')
+            ->orderByDesc('average_rating')
+            ->get();
+        if ($category !== '*') {
+            $query->where('category', $category);
+        }
+        return $query;
+    }
+
+    public function showOneProductRate($id)
+    {
+        $product = $this->model::select('products.*', DB::raw('COALESCE(AVG(rates.star_value), 0) as average_rating'))
+            ->leftJoin('rates', 'products.id', '=', 'rates.product_id')
+            ->where('products.id', $id)
+            ->groupBy('products.id')
+            ->first();
+
+        if (!$product) {
+            // Xử lý khi không tìm thấy sản phẩm
+            return abort(404);
+        }
+
+        return $product;
+    }
+
+    public function getProductsIsHot()
+    {
+        return $this->model->where('active', '0')->where('is_banner', '1')->get();
     }
 
     public function getCountProducts()
     {
-        return DB::table('products')->count();
-    }
-
-    public function getProductbyUserId()
-    {
-        return DB::table('carts')->where('user_id', Auth::user()->id)->where('product_order', 'no')->get();;
+        return $this->model->count();
     }
 
     public function getIphoneProducts()
     {
-        return DB::table('products')->where('catagory', 'iphone')->get();
+        return $this->model->where('category', 'iphone')->get();
     }
 
     public function getAppleWatchProducts()
     {
-        return DB::table('products')->where('catagory', 'apple watch')->get();
+        return $this->model->where('category', 'apple watch')->get();
     }
 
     public function getDesktopProducts()
     {
-        return DB::table('products')->where('catagory', 'desktop')->get();
-    }
-
-    public function getAboutUs()
-    {
-        return DB::table('about_us')->get();
-    }
-
-    public function getBanners()
-    {
-        return DB::table('banners')->get();
-    }
-    // Chuyển sang repository của rates
-    public function getRates()
-    {
-        return DB::table('rates')
-            ->join('users', 'rates.user_id', '=', 'users.id')
-            ->select('rates.*', 'users.name')
-            ->get();
-    }
-
-    public function getAllRates()
-    {
-        return DB::table('rates')->get();
+        return $this->model->where('category', 'desktop')->get();
     }
 }

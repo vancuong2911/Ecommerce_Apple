@@ -1,32 +1,65 @@
 @extends('layout', ['title' => 'Home'])
 
 @section('page-content')
+    @if (session('message'))
+        <div class="notification-container">
+            <div class="notification">
+                <div class="notification-message">
+                    {!! session('message') !!}
+                </div>
+            </div>
+        </div>
+    @endif
     <!-- ***** Main Banner Area Start ***** -->
     <section id="billboard" class="position-relative overflow-hidden bg-light-blue">
         <div class="swiper main-swiper">
             <div class="swiper-wrapper">
-                @foreach ($banners as $banner)
-                    <div class="swiper-slide">
-                        <div class="container">
-                            <div class="row d-flex align-items-center">
-                                <div class="col-md-6">
-                                    <div class="banner-content">
-                                        <h1 class="display-2 text-uppercase text-dark pb-5">Your Products Are Great.</h1>
-                                        <a href="shop.html"
-                                            class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop
-                                            Product</a>
+                @php
+                    $hasBanner = false;
+                @endphp
+                @foreach ($products as $product)
+                    @if ($product->is_banner == 1)
+                        @php
+                            $hasBanner = true;
+                        @endphp
+                        <div class="swiper-slide">
+                            <div class="container">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="banner-content">
+                                            <h1 class="display-2 text-uppercase text-dark pb-5">
+                                                {{ $product->description_short }}</h1>
+                                            <a href="{{ route('single.product', $product->id) }}"
+                                                class="btn btn-medium btn-dark text-uppercase btn-rounded-none"
+                                                target="_blank">Shop
+                                                Product</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="image-holder" style="margin: 73px 0 5px 0;">
+                                            <img src="{{ asset('clients/images_upload/Products/' . $product->image) }}"
+                                                alt="banner" height="675px">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-5">
-                                    <div class="image-holder" style="margin: 73px 0 5px 0;">
-                                        <img src="{{ asset('clients/images_upload/Banners/' . $banner->image) }}"
-                                            alt="banner" height="675px">
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+                @if (!$hasBanner)
+                    <div class="swiper-slide" style="padding-top: 150px">
+                        <div class="container">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-md-12">
+                                    <div class="banner-content">
+                                        <h1 class="display-2 text-uppercase text-dark pb-5">
+                                            We haven't updated any banners yet!</h1>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @endif
 
             </div>
         </div>
@@ -116,7 +149,7 @@
                     @foreach ($about_us as $a_us_item)
                         <div class="image-holder mb-4">
                             <div>
-                                <img src="{{ asset('clients/images/' . $a_us_item->image) }}" alt="single"
+                                <img src="{{ asset('clients/images_upload/Banners/' . $a_us_item->image) }}" alt="single"
                                     class="single-image">
                             </div>
                         </div>
@@ -126,8 +159,8 @@
                         <div class="display-header">
                             <h2 class="display-7 text-uppercase text-dark">{{ $a_us_item->title }}</h2>
                             <p class="pb-3">{{ $a_us_item->description }}</p>
-                            <a href="#" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Our
-                                store</a>
+                            {{-- <a href="/menu" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Our
+                                store</a> --}}
                         </div>
                     </div>
                 </div>
@@ -141,11 +174,25 @@
                             <div class="col-lg-12 col-md-12 col-xs-12">
                                 <div class="right-content">
                                     <div class="thumb">
-                                        <a rel="nofollow" href="{{ $a_us_item->youtube_link }}" target="_blank"> <i
-                                                class="fa fa-play"></i></a>
+                                        <a rel="nofollow" href="#" class="play-btn"
+                                            data-video="{{ asset('clients/images_upload/About_Us/' . $a_us_item->youtube_link) }}">
+                                            <i class="fa fa-play"></i>
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <div id="videoModal" class="modal" style="overflow: hidden;">
+                                                <span class="close">X</span>
+                                                <video id="videoPlayer" controls>
+                                                    <source
+                                                        src="{{ asset('clients/images_upload/About_Us/' . $a_us_item->youtube_link) }}"
+                                                        type="video/mp4">
+                                                </video>
+                                                <iframe id="videoFrame" src="" frameborder="0"
+                                                    allowfullscreen></iframe>
+                                            </div>
+                                        </div>
                                         <img src="{{ asset('clients/images_upload/About_Us/' . $a_us_item->vd_image) }}"
                                             alt="" style="border-radius: 50px;">
-
                                     </div>
                                 </div>
                             </div>
@@ -156,46 +203,6 @@
             </div>
         </div>
     </section>
-    <!-- ***** About Area Ends ***** -->
-
-    <!-- ***** About Area Starts ***** -->
-    {{-- <section class="section" id="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <div class="left-text-content">
-                        <div class="section-heading">
-                            @foreach ($about_us as $a_us)
-                                <h6>About Us</h6>
-                                <h2>{{ $a_us->title }}</h2>
-                        </div>
-                        <p>{{ $a_us->description }}</p>
-                        <div class="row">
-                            <div class="col-4">
-                                <img src="{{ asset('assets/images/' . $a_us->image1) }}" alt="">
-                            </div>
-                            <div class="col-4">
-                                <img src="{{ asset('assets/images/' . $a_us->image2) }}" alt="">
-                            </div>
-                            <div class="col-4">
-                                <img src="{{ asset('assets/images/' . $a_us->image3) }}" alt="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <div class="right-content">
-                        <div class="thumb">
-                            <a rel="nofollow" href="{{ $a_us->youtube_link }}" target="_blank"> <i
-                                    class="fa fa-play"></i></a>
-                            <img src="{{ asset('assets/images/' . $a_us->vd_image) }}" alt="">
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
     <!-- ***** About Area Ends ***** -->
 
     <!-- ***** Menu Area Starts ***** -->
@@ -240,374 +247,130 @@
                             <section class='tabs-content'>
                                 <article id='tabs-1'>
                                     <div class="row">
-
-                                        @foreach ($iphone as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 == 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="left-list">
-
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
-                                                                        alt="" height="120px">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}$</h6>
-                                                                    </div>
+                                        @foreach ($iphoneProducts as $item)
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="left-list">
+                                                        <div class="col-lg-12">
+                                                            <div class="tab-item">
+                                                                <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
+                                                                    alt="" height="120px">
+                                                                <h4><a target="_blank"
+                                                                        href="{{ route('single.product', $item->id) }}">{{ $item->name }}</a>
+                                                                </h4>
+                                                                <p>{{ $item->description }}</p>
+                                                                <div class="price">
+                                                                    <h6>{{ $item->price }}$</h6>
+                                                                </div>
+                                                                <span class="product_rating">
+                                                                    @php
+                                                                        $per_rate = number_format($item->average_rating, 1);
+                                                                        $roundedRating = floor($item->average_rating);
+                                                                    @endphp
                                                                     <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
+                                                                        @for ($i = 1; $i <= $roundedRating; $i++)
                                                                             <i class="fa fa-star "></i>
                                                                         @endfor
 
-                                                                        @if ($fraction != 0)
+                                                                        @if ($roundedRating != 0 && $roundedRating != $item->average_rating)
                                                                             <i class="fa fa-star-half"></i>
                                                                         @endif
-
-
                                                                         <span
                                                                             class="rating_avg">({{ $per_rate }})</span>
                                                                     </span>
-                                                                    <br>
-                                                                </div>
+                                                                </span>
+                                                                <br>
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         @endforeach
-                                        @foreach ($iphone as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 != 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="right-list">
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
-                                                                        alt="" height="120px">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}$</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                    <br>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-
-
                                     </div>
+
                                 </article>
                                 <article id='tabs-2'>
                                     <div class="row">
-                                        @foreach ($apple_watch as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 == 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="left-list">
-
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
+                                        @foreach ($appleWatchProducts as $item)
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="left-list">
+                                                        <div class="col-lg-12">
+                                                            <div class="tab-item">
+                                                                <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
+                                                                    alt="" height="120px">
+                                                                <h4><a target="_blank"
+                                                                        href="{{ route('single.product', $item->id) }}">{{ $item->name }}</a>
+                                                                </h4>
+                                                                <p>{{ $item->description }}</p>
+                                                                <div class="price">
+                                                                    <h6>{{ $item->price }}$</h6>
                                                                 </div>
-                                                            </div>
+                                                                @php
+                                                                    $roundedRating = floor($item->average_rating);
+                                                                @endphp
+                                                                <span class="product_rating">
+                                                                    @for ($i = 1; $i <= $roundedRating; $i++)
+                                                                        <i class="fa fa-star "></i>
+                                                                    @endfor
 
+                                                                    @if ($roundedRating != 0 && $roundedRating != $item->average_rating)
+                                                                        <i class="fa fa-star-half"></i>
+                                                                    @endif
+
+                                                                    <span
+                                                                        class="rating_avg">({{ $item->average_rating }})</span>
+                                                                </span>
+                                                                <br>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         @endforeach
-                                        @foreach ($apple_watch as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 != 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="right-list">
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                    <br>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-
                                     </div>
                                 </article>
                                 <article id='tabs-3'>
                                     <div class="row">
-                                        @foreach ($desktop as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 == 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="left-list">
-
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
+                                        @foreach ($desktopProducts as $item)
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="left-list">
+                                                        <div class="col-lg-12">
+                                                            <div class="tab-item">
+                                                                <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
+                                                                    alt="" height="120px">
+                                                                <h4><a target="_blank"
+                                                                        href="{{ route('single.product', $item->id) }}">{{ $item->name }}</a>
+                                                                </h4>
+                                                                <p>{{ $item->description }}</p>
+                                                                <div class="price">
+                                                                    <h6>{{ $item->price }}$</h6>
+                                                                </div>
+                                                                <span class="product_rating">
+                                                                    @php
+                                                                        $roundedRating = floor($item->average_rating);
+                                                                    @endphp
                                                                     <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
+                                                                        @for ($i = 1; $i <= $roundedRating; $i++)
                                                                             <i class="fa fa-star "></i>
                                                                         @endfor
 
-                                                                        @if ($fraction != 0)
+                                                                        @if ($roundedRating != 0 && $roundedRating != $item->average_rating)
                                                                             <i class="fa fa-star-half"></i>
                                                                         @endif
 
-
                                                                         <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
+                                                                            class="rating_avg">({{ $item->average_rating }})</span>
                                                                     </span>
-                                                                    <br>
-
-                                                                </div>
+                                                                </span>
+                                                                <br>
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         @endforeach
-                                        @foreach ($desktop as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 != 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="right-list">
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('clients/images_upload/products/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-
                                     </div>
                                 </article>
                             </section>
@@ -621,424 +384,6 @@
         </div>
     </section>
 
-    <!-- ***** Menu Area Starts ***** -->
-    {{-- <section class="section" id="offers">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 offset-lg-4 text-center">
-                    <div class="section-heading">
-                        <h6>Midway Week</h6>
-                        <h2>This Week’s Special Meal Offers</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="row" id="tabs">
-                        <div class="col-lg-12">
-                            <div class="heading-tabs">
-                                <div class="row">
-                                    <div class="col-lg-6 offset-lg-3">
-                                        <ul>
-
-                                            <li><a href='#tabs-1'><img src="{{ asset('clients/images_upload/products/tab-icon-01.png') }}"
-                                                        alt="">Breakfast</a></li>
-                                            <li><a href='#tabs-2'><img src="{{ asset('assets/images/tab-icon-02.png') }}"
-                                                        alt="">apple_watch</a></a></li>
-                                            <li><a href='#tabs-3'><img src="{{ asset('assets/images/tab-icon-03.png') }}"
-                                                        alt="">desktop</a></a></li>
-
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="text-align:center;" class="col-lg-12">
-                            <section class='tabs-content'>
-                                <article id='tabs-1'>
-                                    <div class="row">
-
-                                        @foreach ($breakfast as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 == 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="left-list">
-
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('assets/images/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                    <br>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                        @foreach ($breakfast as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 != 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="right-list">
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('assets/images/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                    <br>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-
-
-                                    </div>
-                                </article>
-                                <article id='tabs-2'>
-                                    <div class="row">
-                                        @foreach ($apple_watch as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 == 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="left-list">
-
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('assets/images/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                        @foreach ($apple_watch as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 != 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="right-list">
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('assets/images/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                    <br>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-
-                                    </div>
-                                </article>
-                                <article id='tabs-3'>
-                                    <div class="row">
-                                        @foreach ($desktop as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 == 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="left-list">
-
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('assets/images/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                    <br>
-
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                        @foreach ($desktop as $item)
-                                            <?php
-                                            
-                                            $total_rate = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->sum('star_value');
-                                            
-                                            $total_voter = DB::table('rates')
-                                                ->where('product_id', $item->id)
-                                                ->count();
-                                            
-                                            if ($total_voter > 0) {
-                                                $per_rate = $total_rate / $total_voter;
-                                            } else {
-                                                $per_rate = 0;
-                                            }
-                                            
-                                            $per_rate = number_format($per_rate, 1);
-                                            
-                                            $whole = floor($per_rate); // 1
-                                            $fraction = $per_rate - $whole;
-                                            
-                                            ?>
-
-                                            @if ($item->id % 2 != 0)
-                                                <div class="col-lg-6">
-                                                    <div class="row">
-                                                        <div class="right-list">
-                                                            <div class="col-lg-12">
-                                                                <div class="tab-item">
-                                                                    <img src="{{ asset('assets/images/' . $item->image) }}"
-                                                                        alt="">
-                                                                    <h4>{{ $item->name }}</h4>
-                                                                    <p>{{ $item->description }}</p>
-                                                                    <div class="price">
-                                                                        <h6>{{ $item->price }}</h6>
-                                                                    </div>
-                                                                    <span class="product_rating">
-                                                                        @for ($i = 1; $i <= $whole; $i++)
-                                                                            <i class="fa fa-star "></i>
-                                                                        @endfor
-
-                                                                        @if ($fraction != 0)
-                                                                            <i class="fa fa-star-half"></i>
-                                                                        @endif
-
-
-                                                                        <span
-                                                                            class="rating_avg">({{ $per_rate }})</span>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endforeach
-
-                                    </div>
-                                </article>
-                            </section>
-                            <br>
-                            <a href="/menu"><input style="color:#fff; background-color:#264653; font-size:20px;"
-                                    class="btn" type="submit" value="Browse All"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
-
     <!-- ***** Yearly Sale Starts -->
     {{-- Di chuyển đến trang chỉ hiển thị sản phẩm giảm giá  --}}
     <section id="yearly-sale" class="bg-light-blue overflow-hidden mt-5 padding-xlarge"
@@ -1050,9 +395,6 @@
                     <h2 class="display-2 pb-5 text-uppercase text-dark">New year sale</h2>
                     <a href="shop.html" class="btn btn-medium btn-dark text-uppercase btn-rounded-none">Shop Sale</a>
                 </div>
-            </div>
-            <div class="col-md-6 col-sm-12">
-
             </div>
         </div>
     </section>
@@ -1076,7 +418,6 @@
 
                     @foreach ($menu as $product)
                         <div class="item">
-
                             <?php
                             $img = $product->image;
                             ?>
@@ -1113,21 +454,27 @@
                                 
                                 ?>
                                 <div class='info' style="opacity: 0.8;">
-                                    <h1 class='title'>{{ $product->name }}</h1>
+                                    <h1 class='title'><a target="_blank"
+                                            href="{{ route('single.product', $product->id) }}">{{ $product->name }}</a>
+                                    </h1>
                                     <p class='description'>{{ $product->description }}</p>
                                     <div class="main-text-button">
                                         <div class="scroll-to-section">
                                             <span class="product_rating">
-                                                @for ($i = 1; $i <= $whole; $i++)
-                                                    <i class="fa fa-star " style="color: #E9C46A;"></i>
-                                                @endfor
+                                                <span class="product_rating">
+                                                    @php
+                                                        $per_rate = number_format($product->average_rating, 1);
+                                                        $roundedRating = floor($product->average_rating);
+                                                    @endphp
+                                                    @for ($i = 1; $i <= $roundedRating; $i++)
+                                                        <i class="fa fa-star " style="color: #E9C46A;"></i>
+                                                    @endfor
 
-                                                @if ($fraction != 0)
-                                                    <i class="fa fa-star-half" style="color: #E9C46A;"></i>
-                                                @endif
-
-
-                                                <span class="rating_avg">({{ $per_rate }})</span>
+                                                    @if ($roundedRating != 0 && $roundedRating != $product->average_rating)
+                                                        <i class="fa fa-star-half" style="color: #E9C46A;"></i>
+                                                    @endif
+                                                    <span class="rating_avg">({{ $per_rate }})</span>
+                                                </span>
                                             </span>
                                             <br>
                                             <a href="/rate/{{ $product->id }}" style="color:#E9C46A;">Rate this</a>
@@ -1137,7 +484,7 @@
                                                     @csrf
                                                     <input type="number" name="number" style="width:50px;"
                                                         id="myNumber" value="1">
-                                                    <input type="submit" class="btn btn-success" value="Add Chart">
+                                                    <input type="submit" class="btn btn-success" value="Add product">
                                                 </form>
                                             @endif
 
@@ -1198,7 +545,6 @@
     </section>
     <!-- ***** Blog latest end ***** -->
 
-
     <!-- ***** Rate ***** -->
     <section id="testimonials" class="position-relative">
         <div class="container">
@@ -1253,7 +599,7 @@
     </section>
     <!-- ***** End Rate ***** -->
 
-    <!-- ***** Reservation Us Area Starts ***** -->
+    <!-- ***** Contact Us Area Starts ***** -->
     <section class="section" id="reservation">
         <div class="container">
             <div class="row">
@@ -1293,7 +639,7 @@
                             @csrf
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <h4>Contact us to get the nearest invoice</h4>
+                                    <h4>Contact us for more information</h4>
                                 </div>
                                 <div class="col-lg-6 col-sm-12">
                                     <fieldset>
@@ -1321,7 +667,7 @@
                                 <div class="col-lg-12">
                                     <fieldset>
                                         <button type="submit" id="form-submit" class="main-button-icon">Make A
-                                            Reservation</button>
+                                            Contact</button>
                                     </fieldset>
                                 </div>
                             </div>
@@ -1331,16 +677,137 @@
             </div>
         </div>
     </section>
-    <!-- ***** Reservation Area Ends ***** -->
-    <!-- ***** Js Clients ***** -->
-    <script src="{{ asset('clients/js/jquery-1.11.0.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-    <script type="text/javascript" src="{{ asset('clients/js/bootstrap.bundle.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('clients/js/plugins.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('clients/js/script.js') }}"></script>
+    <!-- ***** Contact Area Ends ***** -->
+    <style>
+        /* Modal */
+        #videoModal {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+        }
 
-    {{-- Js Clients --}}
-    <script src="{{ asset('clients/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('clients/js/jquery-1.11.0.min.js') }}"></script>
-    <script src="{{ asset('clients/js/modernizr.js') }}"></script>
+        /* Modal Content */
+        #videoModal .modal-content {
+            position: relative;
+            /* margin: 15% auto 0 auto; */
+            padding: 20px;
+            max-width: 1;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        /* Close Button */
+        #videoModal .close {
+            position: absolute;
+            top: 90px;
+            right: 20px;
+            font-size: 50px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+
+        /* Video Player */
+        #videoPlayer {
+            margin-top: 5%;
+            margin-left: 5%;
+            width: 100%;
+            height: 100%;
+            height: auto;
+            overflow: hidden;
+
+        }
+
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .notification {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            background-color: #5ce644;
+            color: #fff;
+            font-size: 1.2rem;
+            border-radius: 4px;
+            padding: 12px 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            animation: slide-in 0.5s ease-in-out;
+        }
+
+        .notification-icon {
+            margin-right: 10px;
+        }
+
+        .notification-message {
+            flex: 1;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        @keyframes slide-in {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy các phần tử cần sử dụng
+            const playBtn = document.querySelector('.play-btn');
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('videoPlayer');
+
+            // Lắng nghe sự kiện click vào nút play
+            playBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Lấy đường dẫn video từ thuộc tính data-video của thẻ a
+                const videoSrc = playBtn.dataset.video;
+
+                // Gán đường dẫn video cho thẻ source
+                videoPlayer.querySelector('source').src = videoSrc;
+
+                // Hiển thị modal video
+                videoModal.style.display = 'flex';
+
+                // Tự động phát video khi modal hiển thị
+                videoPlayer.play();
+            });
+
+            // Lắng nghe sự kiện click vào nút đóng modal
+            document.querySelector('.close').addEventListener('click', function() {
+                // Dừng phát video
+                videoPlayer.pause();
+
+                // Ẩn modal video
+                videoModal.style.display = 'none';
+            });
+        });
+    </script>
+    <script>
+        // Set time hidden alert
+        setTimeout(function() {
+            $('.notification').hide(); // Ẩn phần tử HTML có class 'notyf'
+        }, 4000); // Thời gian 1 giây
+    </script>
 @endsection

@@ -12,28 +12,25 @@
         integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <script src="script.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-    <br><br><br>
     <div class="row justify-content-center">
         <div>
-
-            <p id="text-area" style="font-size:50px;marigin-bottom:-50px;">Please, rate our service</p>
-
+            <p id="text-area" style="font-size:50px;">Please, rate our service</p>
         </div>
     </div>
-    <table class="table table-striped table-bordered" style="margin:10%; max-width:80%;">
+    <table class="table table-striped table-bordered" style="margin:5%; max-width:80%;">
 
         <tr>
             <td>
-                <img src="{{ asset('assets/images/' . $products->image) }}" height=150px width=180px>
+                <img src="{{ asset('assets/images/' . $product->image) }}" height=150px width=180px>
             </td>
             <td>
-                <h2>{{ $products->name }}</h2>
-                <h4>USD {{ $products->price }}</h4>
-                <p>{{ $products->description }}</p>
+                <h2>{{ $product->name }}</h2>
+                <h4>USD {{ $product->price }}</h4>
+                <p>{{ $product->description }}</p>
 
                 <?php
                 
-                Session::put('product_id', $products->id);
+                Session::put('product_id', $product->id);
                 
                 $whole = floor($per_rate); // 1
                 $fraction = $per_rate - $whole;

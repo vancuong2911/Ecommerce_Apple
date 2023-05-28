@@ -3,21 +3,19 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class CheckUserType
 {
-    public function handle(Request $request, Closure $next)
+    public function handle($request, Closure $next)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $userType = Auth::user()->usertype;
-
-        if ($userType != '1') {
-            return redirect('/');
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->usertype == '1' || $user->usertype == '2') {
+                // User is admin
+                return $next($request);
+            }
         }
 
         return $next($request);

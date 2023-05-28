@@ -1,96 +1,86 @@
 @extends('admin/adminlayout')
 
 @section('container')
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Add Banner</h4>
 
-
-<div class="col-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Add Banner</h4>
-                    
-                    @if(Session::has('wrong'))
-              
+                @if (Session::has('wrong'))
                     <div class="alert">
-                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                  <strong>Opps !</strong> {{Session::get('wrong')}}
-                </div>
-                <br>
-                    @endif
-                    @if(Session::has('success'))
-              
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>Opps !</strong> {{ Session::get('wrong') }}
+                    </div>
+                    <br>
+                @endif
+                @if (Session::has('success'))
                     <div class="success">
-                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                  <strong>Congrats !</strong> {{Session::get('success')}}
-                </div>
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>Congrats !</strong> {{ Session::get('success') }}
+                    </div>
                     <br>
-                    @endif
-                    <br>
+                @endif
+                <br>
 
-                    <form class="forms-sample" runat="server" action="/banner/add/process" method="post" enctype="multipart/form-data">
+                <form class="forms-sample" runat="server" action="/banner/add/process" method="post"
+                    enctype="multipart/form-data">
 
-                       @csrf
+                    @csrf
 
-    
 
-                      <div class="form-group">
+
+                    <div class="form-group">
                         <label for="exampleFormControlFile1">Image</label>
                         <input type="file" name="image" class="form-control-file" id="exampleFormControlFile1">
                     </div>
-                  
-                    
-                      <button type="submit" class="btn btn-primary me-2">Submit</button>
+                    <div class="form-group">
+                        <input type="text" name="content" class="form-control-file" id="exampleFormControlFile1">
+                    </div>
 
-                    </form>
-                  </div>
-                </div>
+                    <button type="submit" class="btn btn-primary me-2">Submit</button>
 
+                </form>
             </div>
+        </div>
+
+    </div>
 
 
 
 
 
 
-<script>
-
-
-
-
-</script>
-
-
-
-
+    <script></script>
 @endsection()
 
 
 
 
 <style>
-.alert {
-  padding: 20px;
-  background-color: #f44336;
-  color: white;
-}
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+    }
 
-.success {
-  padding: 20px;
-  background-color: #4BB543 ;
-  color: white;
-}
+    .success {
+        padding: 20px;
+        background-color: #4BB543;
+        color: white;
+    }
 
-.closebtn {
-  margin-left: 15px;
-  color: white;
-  font-weight: bold;
-  float: right;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-.closebtn:hover {
-  color: black;
-}
+    .closebtn:hover {
+        color: black;
+    }
 </style>

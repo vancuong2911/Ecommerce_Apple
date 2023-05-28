@@ -13,30 +13,29 @@
     <div class="container mt-12" style="padding-top: 180px;">
         <div class="row bg-light-blue p-5 rounded">
             <div class="col-md-3">
-                <img src="{{ asset('clients/images_upload/products/' . $products->image) }}" class="w-100">
+                <img src="{{ asset('clients/images_upload/products/' . $product->image) }}" class="w-100">
             </div>
             <div class="col-md-9">
                 <div class="section-heading">
-                    <h2>{{ $products->name }}</h2>
-                    <h4>{{ $products->price }}$</h4>
-                    <p class="text-uppercase text-dark">{{ $products->description }}</p>
+                    <h2>{{ $product->name }}</h2>
+                    <h4>{{ $product->price }}$</h4>
+                    <p class="text-uppercase text-dark">{{ $product->description }}</p>
                 </div>
 
-                <?php
-                Session::put('product_id', $products->id);
-                $whole = floor($per_rate);
-                $fraction = $per_rate - $whole;
-                ?>
                 <div class="d-flex text-center">
-                    <div class="product_rating">
-                        @for ($i = 1; $i <= $whole; $i++)
-                            <i class="fa fa-star"></i>
+                    <span class="product_rating">
+                        @php
+                            $roundedRating = floor($product->average_rating);
+                        @endphp
+                        @for ($i = 1; $i <= $roundedRating; $i++)
+                            <i class="fa fa-star " style="color: #E9C46A;"></i>
                         @endfor
-                        @if ($fraction != 0)
-                            <i class="fa fa-star-half"></i>
+
+                        @if ($roundedRating != 0 && $roundedRating != $product->average_rating)
+                            <i class="fa fa-star-half" style="color: #E9C46A;"></i>
                         @endif
-                        <span class="rating_avg">({{ $per_rate }})</span>
-                    </div>
+                        <span class="rating_avg">({{ $roundedRating }})</span>
+                    </span>
                     <div id="rate" class="rate border-top">
                         <div class="section-heading">
                             <h2 style="color:#182c53">Your rating</h2>
@@ -53,19 +52,18 @@
                 <hr>
                 <div class="comments">
                     <div class="section-heading">
-                        <h2 style="color:#182c53">Comments your</h2>
+                        <h2 style="color:#182c53">People's comments</h2>
                     </div>
                     @foreach ($comments as $comment)
                         <div class="comment">
                             {{-- @dd($comment) --}}
-                            <p class="text-uppercase text-dark">{{ $comment->comments }}</p>
-                            <p class="text-uppercase text-dark">{{ $comment->created_at }}</p>
+                            <span class="text-uppercase text-dark"style="font-size: 2rem">{{ $comment->comments }}</span>
                         </div>
                     @endforeach
                 </div>
 
                 <div class="mt-3">
-                    <a href="/edit/rate/{{ $products->id }}" class="text-success btn btn-warning me-3"><b
+                    <a href="/edit/rate/{{ $product->id }}" class="text-success btn btn-warning me-3"><b
                             style="color:#fff">Edit
                             Rating</b></a>
                     <a href="/delete/rate/" class="text-danger btn btn-danger"><b style="color:#fff">Delete Rating</b></a>

@@ -1,138 +1,114 @@
 @extends('admin/adminlayout')
 
 @section('container')
-
-
-
-
-
-
-<div class="row ">
-              <div class="col-12 grid-margin">
-                <div class="card">
-                  <div class="card-body">
+    <div class="row ">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
                     <h4 class="card-title">Pending Order Details</h4>
 
-                    @if(Session::has('wrong'))
-
+                    @if (Session::has('wrong'))
                         <br>
-              
-                          <div class="alert">
-                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                        <strong>Opps !</strong> {{Session::get('wrong')}}
-                      </div>
-                      <br>
-                          @endif
-                          @if(Session::has('success'))
 
+                        <div class="alert">
+                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                            <strong>Opps !</strong> {{ Session::get('wrong') }}
+                        </div>
+                        <br>
+                    @endif
+                    @if (Session::has('success'))
+                        <br>
 
-                          <br>
-                    
-                          <div class="success">
-                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                        <strong>Congrats !</strong> {{Session::get('success')}}
-                      </div>
-                          <br>
-                          @endif
+                        <div class="success">
+                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                            <strong>Congrats !</strong> {{ Session::get('success') }}
+                        </div>
+                        <br>
+                    @endif
                     <div class="table-responsive">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                          
-           
-                            <th> Date </th>
-                            <th> Invoice No </th>
-                            <th> Customer Name </th>
-                            <th> Customer Phone</th>
-                        
-                            <th> Shippping Address </th>
-              
-                  
-                            <th> Payment Method </th>
-                            <th> Action </th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th> Date </th>
+                                    <th> Invoice No </th>
+                                    <th> Customer Name </th>
+                                    <th> Customer Phone</th>
+                                    <th> Shippping Address </th>
+                                    <th> Payment Method </th>
+                                    @if (Auth::user()->usertype == 1)
+                                        <th> Action </th>
+                                    @endif
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                        @foreach($orders as $order)
-                          <tr>
-                           
-                            <td>
-                              <span class="ps-2">{{ $order->purchase_date }}</span>
-                            </td>
-                            <td> {{ $order->invoice_no }} </td>
-                            <td>
+                                @foreach ($orders as $order)
+                                    <tr>
+
+                                        <td>
+                                            <span class="ps-2">{{ $order->purchase_date }}</span>
+                                        </td>
+                                        <td> {{ $order->invoice_no }} </td>
+                                        <td>
 
 
-                            @php
+                                            @php
+                                                $user = DB::table('users')
+                                                    ->where('id', $order->user_id)
+                                                    ->first();
+                                            @endphp
+                                            {{ $user->name }}
+                                        </td>
+                                        <td> {{ $user->phone }}</td>
+                                        <td> {{ $order->shipping_address }} </td>
+                                        <td> {{ $order->pay_method }} </td>
 
-                              $user=DB::table('users')->where('id',$order->user_id)->first();
+                                        @if (Auth::user()->usertype == 1)
+                                            <td>
+                                                <a href="{{ asset('/invoice/details/' . $order->invoice_no) }}"
+                                                    class="badge badge-outline-primary">Details</a>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
 
-                            @endphp
-
-
-                            {{  $user->name }}
-
-
-
-                            </td>
-
-
-                            <td>  {{  $user->phone }}</td>
-                            <td> {{ $order->shipping_address }} </td>
-                     
-                            <td> {{ $order->pay_method }} </td>
-
-                            <td>
-
-                            <a href="{{ asset('/invoice/details/'.$order->invoice_no) }}" class="badge badge-outline-primary">Details</a>
-                            </td>
-                          </tr>
-
-                        @endforeach
-                       
-                        </tbody>
-                      </table>
+                            </tbody>
+                        </table>
                     </div>
-                  </div>
                 </div>
-              </div>
+            </div>
+        </div>
+    @endsection()
 
 
 
 
 
-@endsection()
+    <style>
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+        }
 
+        .success {
+            padding: 20px;
+            background-color: #4BB543;
+            color: white;
+        }
 
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-
-
-<style>
-.alert {
-  padding: 20px;
-  background-color: #f44336;
-  color: white;
-}
-
-.success {
-  padding: 20px;
-  background-color: #4BB543 ;
-  color: white;
-}
-
-.closebtn {
-  margin-left: 15px;
-  color: white;
-  font-weight: bold;
-  float: right;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.closebtn:hover {
-  color: black;
-}
-</style>
+        .closebtn:hover {
+            color: black;
+        }
+    </style>

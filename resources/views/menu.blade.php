@@ -69,8 +69,6 @@
                                         
                                         ?>
 
-
-
                                         <span class="product_rating">
                                             @for ($i = 1; $i <= $whole; $i++)
                                                 <i class="fa fa-star "></i>
@@ -117,7 +115,8 @@
                                     </div>
                                     <div class="card-detail d-flex justify-content-between pt-3 pb-3">
                                         <h3 class="card-title text-uppercase">
-                                            <a href="#">{{ $product->name }}</a>
+                                            <a href="{{ route('single.product', $product->id) }}"
+                                                target="_blank">{{ $product->name }}</a>
                                         </h3>
                                         <span class="item-price text-primary">${{ $product->price }}</span>
                                     </div>

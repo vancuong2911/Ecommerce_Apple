@@ -49,6 +49,7 @@
                     </div>
                     @php $total = 0 @endphp
                     @foreach ($carts as $product)
+                        {{-- @dd($product) --}}
                         @php $total += $product['price'] * $product['quantity'] @endphp
                         <div class="cart-item border-top border-bottom padding-small">
                             <div class="row align-items-center">
@@ -56,18 +57,18 @@
                                     <div class="cart-info d-flex flex-wrap align-items-center mb-4">
                                         <div class="col-lg-5">
                                             <div class="card-image">
-                                                <img src="{{ asset('clients/images_upload/Products/' . $product->image) }}"
+                                                <img src="{{ asset('clients/images_upload/Products/' . $product['image']) }}"
                                                     alt="cloth" class="img-fluid">
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="card-detail ps-3">
                                                 <h3 class="card-title text-uppercase">
-                                                    <a href="#">{{ $product->name }}</a>
+                                                    <a href="#">{{ $product['name'] }}</a>
                                                 </h3>
                                                 <div class="card-price">
                                                     <span class="money text-primary"
-                                                        data-currency-usd="{{ $product->price }}">${{ $product->price }}</span>
+                                                        data-currency-usd="{{ $product['price'] }}">${{ $product['price'] * 1 }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -80,7 +81,7 @@
                                                 <div class="qty-number d-flex">
                                                     <div class="quntity-button incriment-button">+</div>
                                                     <input class="spin-number-output bg-light no-margin" type="text"
-                                                        readonly="" value="{{ $product->quantity }}">
+                                                        readonly="" value="{{ $product['quantity'] }}">
                                                     <div class="quntity-button decriment-button">-</div>
                                                 </div>
                                                 <div class="regular-price"></div>
@@ -89,7 +90,8 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="total-price">
-                                                <span class="money text-primary">${{ $product->price }}</span>
+                                                <span
+                                                    class="money text-primary">${{ $product['price'] * $product['quantity'] }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -98,7 +100,7 @@
                                     <div class="cart-remove">
                                         <div class="cart-remove">
                                             <a href="#">
-                                                <form method="post" action="{{ route('cart.destroy', $product) }}"
+                                                <form method="post" action="{{ route('cart.destroy', $product['id']) }}"
                                                     onsubmit="return confirm('Sure?')">
                                                     @csrf
                                                     <button style="background: white">
@@ -185,7 +187,7 @@
                                                 <span class="price-amount amount text-primary ps-5">
                                                     <bdi>
                                                         <span
-                                                            class="price-currency-symbol">$</span>{{ $discount_price }}</bdi>
+                                                            class="price-currency-symbol">$</span>{{ $discount_price * 1 }}</bdi>
                                                 </span>
                                             </td>
                                         </tr>

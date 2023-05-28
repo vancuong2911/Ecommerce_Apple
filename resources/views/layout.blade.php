@@ -262,7 +262,7 @@
                                 <a class="nav-link me-4" href="#menu">Products</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" href="#smart-watches">Favourite</a>
+                                <a class="nav-link me-4" href="#offers">Category</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-4" href="#yearly-sale">Sale</a>
@@ -272,7 +272,7 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link me-4 dropdown-toggle link-dark" data-bs-toggle="dropdown"
-                                    href="#" role="button" aria-expanded="false">Pages</a>
+                                    href="#" role="button" aria-expanded="false">Orders</a>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a href="/trace-my-order" class="dropdown-item">Trace Order</a>
@@ -363,8 +363,7 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="logo">
-                        <a href="{{ url('home') }}"><img src="{{ asset('clients/images/main-logo.png') }}"
-                                class="logo"></a>
+                        <a href="#header" style="font-size: 3.8rem">MiniStore</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-xs-12">

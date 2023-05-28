@@ -5,8 +5,9 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     @if (Auth::user()->usertype != 2)
-        <title>Admin Panel</title>
+        <title>Admin MiniStore</title>
     @endif
     @if (Auth::user()->usertype == 2)
         <title>User Panel</title>
@@ -26,7 +27,8 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="{{ asset('admin/assets//css/style.css') }}">
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="{{ asset('admin/assets//images/favicon.png') }}" />
+    <link rel="shortcut icon" type="image/x-icon"
+        href="https://th.bing.com/th/id/R.66dacd13d1a786cad40e9197159da06a?rik=6q8PoTr4wsCZCg&pid=ImgRaw&r=0">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap"
@@ -40,33 +42,39 @@
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
                 @if (Auth::user()->usertype != 2)
-                    <a class="sidebar-brand brand-logo" href="/redirects"
-                        style="color:white;text-decoration:none;">Admin Panel</a>
+                    <a class="sidebar-brand brand-logo" href="/admin/home"
+                        style="color:white;text-decoration:none;">Admin MiniStore</a>
                 @endif
                 @if (Auth::user()->usertype == 2)
-                    <a class="sidebar-brand brand-logo" href="/redirects" style="color:white;text-decoration:none;">User
+                    <a class="sidebar-brand brand-logo" href="/admin/home"
+                        style="color:white;text-decoration:none;">User
                         Panel</a>
                 @endif
-                <a class="sidebar-brand brand-logo-mini" href="index.html"><img
-                        src="{{ asset('admin/assets//images/logo-mini.svg') }}" alt="logo" /></a>
+                <a class="sidebar-brand brand-logo-mini" href="index.html">
+
+                    <img class="img-xs rounded-circle " src="{{ asset('storage/assets/images/admins/') }}"
+                        alt="logo" />
+                </a>
             </div>
             <ul class="nav">
                 <li class="nav-item profile">
                     <div class="profile-desc">
                         <div class="profile-pic">
                             <div class="count-indicator">
-                                <img class="img-xs rounded-circle "
-                                    src="{{ asset('assets/images/admin/' . Auth::user()->profile_photo_path) }}"
-                                    alt="">
+                                @php
+                                    $data = DB::table('users')
+                                        ->where('id', Auth::id())
+                                        ->first();
+                                    $image = $data->profile_photo_path;
+                                @endphp
+                                <img class="img-xs rounded-circle "src="{{ asset('storage/assets/images/admins/' . $image) }}"
+                                    alt="logo" />
                                 <span class="count bg-success"></span>
                             </div>
                             <div class="profile-name">
                                 <h5 class="mb-0 font-weight-normal">{{ Auth::user()->name }}</h5>
                                 @if (Auth::user()->usertype == 1)
                                     <span> Super Admin</span>
-                                @endif
-                                @if (Auth::user()->usertype == 3)
-                                    <span>Sub Admin</span>
                                 @endif
                                 @if (Auth::user()->usertype == 2)
                                     <span>Delivery Boy</span>
@@ -114,7 +122,7 @@
                     <span class="nav-link">Navigation</span>
                 </li>
                 <li class="nav-item menu-items">
-                    <a class="nav-link" href="/redirects">
+                    <a class="nav-link" href="/admin/home">
                         <span class="menu-icon">
                             <i class="mdi mdi-speedometer"></i>
                         </span>
@@ -125,9 +133,9 @@
                     <li class="nav-item menu-items">
                         <a class="nav-link" href="/admin/products">
                             <span class="menu-icon">
-                                <i class="mdi mdi-food"></i>
+                                <i class="mdi mdi-tablet-cellphone"></i>
                             </span>
-                            <span class="menu-title">Menu Products</span>
+                            <span class="menu-title">List Products</span>
                         </a>
                     </li>
                 @endif
@@ -150,7 +158,7 @@
                             <li class="nav-item"> <a class="nav-link" href="/orders-complete">Complete Orders</a>
                             </li>
                             <li class="nav-item"> <a class="nav-link" href="/orders/cancel">Cancelled Order</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="/order/location">Update Location</a></li>
+                            {{-- <li class="nav-item"> <a class="nav-link" href="/order/location">Update Location</a></li> --}}
 
                         </ul>
                     </div>
@@ -173,15 +181,16 @@
             </div>
           </li>
           -->
-
-                {{-- <li class="nav-item menu-items">
-                    <a class="nav-link" href="/admin/reservation">
-                        <span class="menu-icon">
-                            <i class="mdi mdi-chart-bar"></i>
-                        </span>
-                        <span class="menu-title">Reservation</span>
-                    </a>
-                </li>
+                @if (Auth::user()->usertype == 1)
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" href="/admin/contact">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-contact-mail"></i>
+                            </span>
+                            <span class="menu-title">Contact</span>
+                        </a>
+                    </li>
+                @endif
                 @if (Auth::user()->usertype == 1)
                     <li class="nav-item menu-items">
                         <a class="nav-link" href="/admin/customize">
@@ -190,25 +199,8 @@
                             </span>
                             <span class="menu-title">Customize Template</span>
                         </a>
-                    </li> --}}
-                <li class="nav-item menu-items">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic2" aria-expanded="false"
-                        aria-controls="ui-basic">
-                        <span class="menu-icon">
-                            <i class="mdi mdi-file-document-box"></i>
-                        </span>
-                        <span class="menu-title">Banners</span>
-                        <i class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="ui-basic2">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="/admin/add/banner">Add Banners</a>
-                            </li>
-                            <li class="nav-item"> <a class="nav-link" href="/admin/banner/all">All Banners</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                    </li>
+                @endif
 
                 <li class="nav-item menu-items">
                     <a class="nav-link" href="/admin/show">
@@ -230,7 +222,7 @@
                     </a>
                 </li>
 
-                {{-- @if (Auth::user()->usertype == 1)
+                @if (Auth::user()->usertype == 1)
                     <li class="nav-item menu-items">
                         <a class="nav-link" href="/delivery-boy">
                             <span class="menu-icon">
@@ -239,7 +231,7 @@
                             <span class="menu-title">Delivery Boy</span>
                         </a>
                     </li>
-                @endif --}}
+                @endif
 
 
                 @if (Auth::user()->usertype != 2)
@@ -343,9 +335,14 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                                 <div class="navbar-profile">
-                                    <img class="img-xs rounded-circle"
-                                        src="{{ asset('assets/images/admin/' . Auth::user()->profile_photo_path) }}"
-                                        alt="">
+                                    @php
+                                        $data = DB::table('users')
+                                            ->where('id', Auth::id())
+                                            ->first();
+                                        $image = $data->profile_photo_path;
+                                    @endphp
+                                    <img class="img-xs rounded-circle "src="{{ asset('storage/assets/images/admins/' . $image) }}"
+                                        alt="logo" />
                                     <p class="mb-0 d-none d-sm-block navbar-profile-name">{{ Auth::user()->name }}</p>
                                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                                 </div>
@@ -403,8 +400,8 @@
                 <!-- partial:partials/_footer.html -->
                 <footer class="footer">
                     <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © RMS
-                            2022</span>
+                        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">MiniStore
+                            2023</span>
 
                         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> <a href="/"
                                 target="_blank">Go to Client Section</a></span>
